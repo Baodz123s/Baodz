@@ -3563,10 +3563,10 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	local UICorner_6 = Instance.new("UICorner")
 	local DeleteButton = Instance.new("ImageButton")
 	local UICorner_7 = Instance.new("UICorner")
-	-- NEW: AutoLoad Button
+	-- AutoLoad Button
 	local AutoLoadButton = Instance.new("ImageButton")
 	local UICorner_8 = Instance.new("UICorner")
-	-- NEW: AutoLoad Status Indicator
+	-- AutoLoad Status Indicator
 	local AutoLoadIndicator = Instance.new("Frame")
 	local UICorner_9 = Instance.new("UICorner")
 
@@ -3580,9 +3580,8 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		if value then
 			ConfigWindowFrame.Position = UDim2.fromOffset(Button.AbsolutePosition.X,Button.AbsolutePosition.Y + (Button.AbsoluteSize.Y * 3));
 
-			-- Updated size to accommodate new button
 			Fatality:CreateAnimation(ConfigWindowFrame,0.3,{
-				Size = UDim2.new(0, 185, 0, 220), -- Increased height
+				Size = UDim2.new(0, 185, 0, 220),
 			})
 
 			Fatality:CreateAnimation(UIStroke,0.3,{
@@ -3633,12 +3632,10 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				ImageTransparency = 0.2500
 			})
 
-			-- NEW: AutoLoad Button Animation
 			Fatality:CreateAnimation(AutoLoadButton,0.3,{
 				ImageTransparency = 0.500
 			})
 
-			-- NEW: AutoLoad Indicator Animation
 			Fatality:CreateAnimation(AutoLoadIndicator,0.3,{
 				BackgroundTransparency = 0.8
 			})
@@ -3703,12 +3700,10 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				ImageTransparency = 1
 			})
 
-			-- NEW: AutoLoad Button Animation
 			Fatality:CreateAnimation(AutoLoadButton,0.3,{
 				ImageTransparency = 1
 			})
 
-			-- NEW: AutoLoad Indicator Animation
 			Fatality:CreateAnimation(AutoLoadIndicator,0.3,{
 				BackgroundTransparency = 1
 			})
@@ -3717,6 +3712,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 
 	ElementToggle(false);
 
+	-- UI Setup (same as before)
 	ConfigWindowFrame.Name = "ConfigWindowFrame"
 	ConfigWindowFrame.Parent = Root
 	ConfigWindowFrame.AnchorPoint = Vector2.new(0,1)
@@ -3755,7 +3751,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ScrollingFrame.BorderSizePixel = 0
 	ScrollingFrame.Position = UDim2.new(0, 8, 0, 8)
-	ScrollingFrame.Size = UDim2.new(1, -40, 1, -70) -- Adjusted for new button
+	ScrollingFrame.Size = UDim2.new(1, -40, 1, -70)
 	ScrollingFrame.ZIndex = 207
 	ScrollingFrame.ScrollBarThickness = 0
 
@@ -3784,7 +3780,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	InputFrame.BackgroundColor3 = Fatality.Colors.Black
 	InputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	InputFrame.BorderSizePixel = 0
-	InputFrame.Position = UDim2.new(0, 8, 1, -34) -- Adjusted position
+	InputFrame.Position = UDim2.new(0, 8, 1, -34)
 	InputFrame.Size = UDim2.new(1, -40, 0, 22)
 	InputFrame.ZIndex = 208
 
@@ -3876,7 +3872,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	UICorner_7.CornerRadius = UDim.new(1, 0)
 	UICorner_7.Parent = DeleteButton
 
-	-- NEW: AutoLoad Button
+	-- AutoLoad Button
 	AutoLoadButton.Name = "AutoLoadButton"
 	AutoLoadButton.Parent = ConfigWindowFrame
 	AutoLoadButton.AnchorPoint = Vector2.new(1, 0)
@@ -3884,17 +3880,17 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	AutoLoadButton.BackgroundTransparency = 1.000
 	AutoLoadButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	AutoLoadButton.BorderSizePixel = 0
-	AutoLoadButton.Position = UDim2.new(1, -8, 0, 64) -- New position
+	AutoLoadButton.Position = UDim2.new(1, -8, 0, 64)
 	AutoLoadButton.Size = UDim2.new(0, 15, 0, 15)
 	AutoLoadButton.ZIndex = 209
-	AutoLoadButton.Image = "rbxassetid://10723415903" -- Info/Auto icon
-	AutoLoadButton.ImageColor3 = Color3.fromRGB(100, 200, 255) -- Blue color for auto
+	AutoLoadButton.Image = "rbxassetid://10723415903"
+	AutoLoadButton.ImageColor3 = Color3.fromRGB(100, 200, 255)
 	AutoLoadButton.ImageTransparency = 0.500
 
 	UICorner_8.CornerRadius = UDim.new(1, 0)
 	UICorner_8.Parent = AutoLoadButton
 
-	-- NEW: AutoLoad Status Indicator
+	-- AutoLoad Status Indicator
 	AutoLoadIndicator.Name = "AutoLoadIndicator"
 	AutoLoadIndicator.Parent = ConfigWindowFrame
 	AutoLoadIndicator.AnchorPoint = Vector2.new(0, 1)
@@ -3914,7 +3910,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		ElementToggle(true);
 	end);
 
-	-- Hover effects for all buttons
+	-- Hover effects
 	Fatality:CreateHover(DeleteButton,function(bool)
 		if bool then
 			Fatality:CreateAnimation(DeleteButton,0.3,{
@@ -3963,7 +3959,6 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		end;
 	end);
 
-	-- NEW: AutoLoad Button Hover Effect
 	Fatality:CreateHover(AutoLoadButton,function(bool)
 		if bool then
 			Fatality:CreateAnimation(AutoLoadButton,0.3,{
@@ -4008,7 +4003,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		Element = nil;
 	};
 
-	-- NEW: AutoLoad variables
+	-- AutoLoad variables
 	local autoLoadEnabled = false;
 	local autoLoadConfig = nil;
 
@@ -4033,9 +4028,9 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				local button = new_button();
 				button.Parent = ScrollingFrame;
 				
-				-- NEW: Show autoload indicator
+				-- Show autoload indicator
 				if autoLoadEnabled and autoLoadConfig == v then
-					button.Text = "🔄 "..tostring(v); -- Auto icon
+					button.Text = "🔄 "..tostring(v);
 					button.TextColor3 = Color3.fromRGB(100, 200, 255);
 				else
 					button.Text = " "..tostring(v);
@@ -4089,7 +4084,8 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				for i,v in next , allFiles do
 					local spl = (string.find(v,'/',1,true) and string.split(v,'/')) or (string.find(v,'\\',1,true) and string.split(v,'\\'));
 					local name = spl[#spl];
-					if string.find(name, "%.") then
+					-- Only show .json files in the list
+					if string.find(name, "%.json$") then
 						table.insert(fileList, name);
 					end;
 				end;
@@ -4120,7 +4116,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 			end);
 
 			if success then
-				-- NEW: Clear autoload if deleted config was autoload
+				-- Clear autoload if deleted config was autoload
 				if autoLoadEnabled and autoLoadConfig == name then
 					res:SetAutoLoad(nil);
 				end;
@@ -4210,33 +4206,52 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 			end;
 		end,
 
-		-- NEW: AutoLoad functions
+		-- FIXED: AutoLoad functions
 		SetAutoLoad = function(configName)
 			if configName then
 				autoLoadEnabled = true;
 				autoLoadConfig = configName;
 				AutoLoadIndicator.Visible = true;
 				
-				-- Save autoload setting
-				local autoLoadPath = res.ConfigDirectory.."/autoload.txt";
-				pcall(function()
-					writefile(autoLoadPath, configName);
+				-- Save autoload setting to hidden system folder
+				local success, err = pcall(function()
+					-- Create hidden system folder
+					local systemPath = res.ConfigDirectory.."/.system";
+					if not isfolder(systemPath) then
+						makefolder(systemPath);
+					end;
+					
+					-- Save autoload config as JSON in hidden folder
+					local autoLoadData = {
+						enabled = true,
+						config = configName,
+						timestamp = os.time()
+					};
+					
+					local autoLoadPath = systemPath.."/autoload.json";
+					local jsonData = game:GetService('HttpService'):JSONEncode(autoLoadData);
+					writefile(autoLoadPath, jsonData);
 				end);
 				
-				Fatal.Notifier:Notify({
-					Title = "AutoLoad",
-					Content = "AutoLoad set to: " .. configName,
-					Icon = "refresh-cw",
-					Duration = 3,
-				});
+				if success then
+					Fatal.Notifier:Notify({
+						Title = "AutoLoad",
+						Content = "AutoLoad set to: " .. configName,
+						Icon = "refresh-cw",
+						Duration = 3,
+					});
+				else
+					warn("Failed to save autoload setting: " .. tostring(err));
+				end;
 			else
 				autoLoadEnabled = false;
 				autoLoadConfig = nil;
 				AutoLoadIndicator.Visible = false;
 				
 				-- Remove autoload setting
-				local autoLoadPath = res.ConfigDirectory.."/autoload.txt";
 				pcall(function()
+					local systemPath = res.ConfigDirectory.."/.system";
+					local autoLoadPath = systemPath.."/autoload.json";
 					if isfile(autoLoadPath) then
 						delfile(autoLoadPath);
 					end;
@@ -4260,33 +4275,45 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		LoadAutoLoadSetting = function()
 			if not res.ConfigDirectory then return; end;
 			
-			local autoLoadPath = res.ConfigDirectory.."/autoload.txt";
-			local success, configName = pcall(function()
+			local success, result = pcall(function()
+				local systemPath = res.ConfigDirectory.."/.system";
+				local autoLoadPath = systemPath.."/autoload.json";
+				
 				if isfile(autoLoadPath) then
-					return readfile(autoLoadPath);
+					local content = readfile(autoLoadPath);
+					local data = game:GetService('HttpService'):JSONDecode(content);
+					
+					if data.enabled and data.config then
+						-- Check if config still exists
+						local configPath = res.ConfigDirectory..'/'..data.config;
+						if not string.find(configPath, "%.json$") then
+							configPath = configPath .. ".json";
+						end;
+						
+						if isfile(configPath) then
+							autoLoadEnabled = true;
+							autoLoadConfig = data.config;
+							AutoLoadIndicator.Visible = true;
+							
+							-- Auto load the config after a small delay
+							task.spawn(function()
+								task.wait(1);
+								res:LoadConfig(data.config);
+							end);
+							
+							return true;
+						else
+							-- Config doesn't exist anymore, clear autoload
+							res:SetAutoLoad(nil);
+							return false;
+						end;
+					end;
 				end;
-				return nil;
+				return false;
 			end);
 			
-			if success and configName and configName ~= "" then
-				-- Check if config still exists
-				local configPath = res.ConfigDirectory..'/'..configName;
-				if not string.find(configPath, "%.json$") then
-					configPath = configPath .. ".json";
-				end;
-				
-				if isfile(configPath) then
-					autoLoadEnabled = true;
-					autoLoadConfig = configName;
-					AutoLoadIndicator.Visible = true;
-					
-					-- Auto load the config
-					task.wait(1); -- Small delay to ensure UI is ready
-					res:LoadConfig(configName);
-				else
-					-- Config doesn't exist anymore, clear autoload
-					res:SetAutoLoad(nil);
-				end;
+			if not success then
+				warn("Failed to load autoload setting: " .. tostring(result));
 			end;
 		end,
 
@@ -4451,7 +4478,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				end;
 			end);
 
-			-- NEW: AutoLoad Button Click Handler
+			-- AutoLoad Button Click Handler
 			AutoLoadButton.MouseButton1Click:Connect(function()
 				if import and import.Name then
 					if autoLoadEnabled and autoLoadConfig == import.Name then
@@ -4479,6 +4506,844 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 
 	return res;
 end;
+
+function Fatality:CreateUISettings(Root: ScreenGui, Fatal, Button: ImageButton)
+	
+	local SettingsFrame = Instance.new("Frame")
+	local UICorner = Instance.new("UICorner")
+	local UIStroke = Instance.new("UIStroke")
+	local DropShadow = Instance.new("ImageLabel")
+	local TitleLabel = Instance.new("TextLabel")
+	local ScrollingFrame = Instance.new("ScrollingFrame")
+	local UICorner_2 = Instance.new("UICorner")
+	local UIStroke_2 = Instance.new("UIStroke")
+	local UIListLayout = Instance.new("UIListLayout")
+	local UIPadding = Instance.new("UIPadding")
+	
+	-- Close Button
+	local CloseButton = Instance.new("ImageButton")
+	local UICorner_3 = Instance.new("UICorner")
+	
+	Fatality:ScrollSignal(ScrollingFrame, UIListLayout, "Y")
+	Fatality:AddDragBlacklist(SettingsFrame)
+	
+	local UIToggle = false
+	local ElementToggle = function(value)
+		UIToggle = value
+		
+		if value then
+			SettingsFrame.Position = UDim2.fromOffset(Button.AbsolutePosition.X - 200, Button.AbsolutePosition.Y + (Button.AbsoluteSize.Y * 2))
+			
+			Fatality:CreateAnimation(SettingsFrame, 0.3, {
+				Size = UDim2.new(0, 300, 0, 400),
+			})
+			
+			Fatality:CreateAnimation(UIStroke, 0.3, {
+				Transparency = 0
+			})
+			
+			Fatality:CreateAnimation(DropShadow, 0.3, {
+				ImageTransparency = 0.750
+			})
+			
+			Fatality:CreateAnimation(TitleLabel, 0.3, {
+				TextTransparency = 0
+			})
+			
+			Fatality:CreateAnimation(ScrollingFrame, 0.3, {
+				BackgroundTransparency = 0
+			})
+			
+			Fatality:CreateAnimation(UIStroke_2, 0.3, {
+				Transparency = 0.750
+			})
+			
+			Fatality:CreateAnimation(CloseButton, 0.3, {
+				ImageTransparency = 0.5
+			})
+		else
+			Fatality:CreateAnimation(DropShadow, 0.3, {
+				ImageTransparency = 1
+			})
+			
+			Fatality:CreateAnimation(SettingsFrame, 0.275, {
+				Size = UDim2.new(0, 300, 0, 0),
+			})
+			
+			Fatality:CreateAnimation(UIStroke, 0.3, {
+				Transparency = 1
+			})
+			
+			Fatality:CreateAnimation(TitleLabel, 0.3, {
+				TextTransparency = 1
+			})
+			
+			Fatality:CreateAnimation(ScrollingFrame, 0.3, {
+				BackgroundTransparency = 1
+			})
+			
+			Fatality:CreateAnimation(UIStroke_2, 0.3, {
+				Transparency = 1
+			})
+			
+			Fatality:CreateAnimation(CloseButton, 0.3, {
+				ImageTransparency = 1
+			})
+		end
+	end
+	
+	ElementToggle(false)
+	
+	-- Main Frame Setup
+	SettingsFrame.Name = "SettingsFrame"
+	SettingsFrame.Parent = Root
+	SettingsFrame.AnchorPoint = Vector2.new(0, 1)
+	SettingsFrame.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+	SettingsFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	SettingsFrame.BorderSizePixel = 0
+	SettingsFrame.ClipsDescendants = true
+	SettingsFrame.Position = UDim2.new(2, 0, 2, 0)
+	SettingsFrame.Size = UDim2.new(0, 300, 0, 0)
+	SettingsFrame.ZIndex = 300
+	
+	UICorner.CornerRadius = UDim.new(0, 6)
+	UICorner.Parent = SettingsFrame
+	
+	UIStroke.Color = Color3.fromRGB(29, 29, 29)
+	UIStroke.Parent = SettingsFrame
+	
+	DropShadow.Name = "DropShadow"
+	DropShadow.Parent = SettingsFrame
+	DropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+	DropShadow.BackgroundTransparency = 1.000
+	DropShadow.BorderSizePixel = 0
+	DropShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+	DropShadow.Rotation = 0.001
+	DropShadow.Size = UDim2.new(1, 47, 1, 47)
+	DropShadow.ZIndex = 300
+	DropShadow.Image = "rbxassetid://6014261993"
+	DropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+	DropShadow.ImageTransparency = 0.750
+	DropShadow.ScaleType = Enum.ScaleType.Slice
+	DropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+	
+	-- Title
+	TitleLabel.Name = "TitleLabel"
+	TitleLabel.Parent = SettingsFrame
+	TitleLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	TitleLabel.BackgroundTransparency = 1.000
+	TitleLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	TitleLabel.BorderSizePixel = 0
+	TitleLabel.Position = UDim2.new(0, 15, 0, 10)
+	TitleLabel.Size = UDim2.new(1, -60, 0, 25)
+	TitleLabel.ZIndex = 302
+	TitleLabel.FontFace = Fatality.FontBold
+	TitleLabel.Text = "UI Settings"
+	TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	TitleLabel.TextSize = 16.000
+	TitleLabel.TextTransparency = 0
+	TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	
+	-- Close Button
+	CloseButton.Name = "CloseButton"
+	CloseButton.Parent = SettingsFrame
+	CloseButton.AnchorPoint = Vector2.new(1, 0)
+	CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	CloseButton.BackgroundTransparency = 1.000
+	CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	CloseButton.BorderSizePixel = 0
+	CloseButton.Position = UDim2.new(1, -10, 0, 10)
+	CloseButton.Size = UDim2.new(0, 25, 0, 25)
+	CloseButton.ZIndex = 302
+	CloseButton.Image = "rbxassetid://10747362393"
+	CloseButton.ImageColor3 = Fatality.Colors.Main
+	CloseButton.ImageTransparency = 0.5
+	
+	UICorner_3.CornerRadius = UDim.new(1, 0)
+	UICorner_3.Parent = CloseButton
+	
+	-- Scrolling Frame
+	ScrollingFrame.Parent = SettingsFrame
+	ScrollingFrame.Active = true
+	ScrollingFrame.BackgroundColor3 = Fatality.Colors.Black
+	ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ScrollingFrame.BorderSizePixel = 0
+	ScrollingFrame.Position = UDim2.new(0, 10, 0, 45)
+	ScrollingFrame.Size = UDim2.new(1, -20, 1, -55)
+	ScrollingFrame.ZIndex = 301
+	ScrollingFrame.ScrollBarThickness = 3
+	ScrollingFrame.ScrollBarImageColor3 = Fatality.Colors.Main
+	
+	UICorner_2.CornerRadius = UDim.new(0, 4)
+	UICorner_2.Parent = ScrollingFrame
+	
+	UIStroke_2.Transparency = 0.750
+	UIStroke_2.Color = Color3.fromRGB(29, 29, 29)
+	UIStroke_2.Parent = ScrollingFrame
+	
+	UIListLayout.Parent = ScrollingFrame
+	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	UIListLayout.Padding = UDim.new(0, 8)
+	
+	UIPadding.Parent = ScrollingFrame
+	UIPadding.PaddingBottom = UDim.new(0, 10)
+	UIPadding.PaddingLeft = UDim.new(0, 10)
+	UIPadding.PaddingRight = UDim.new(0, 10)
+	UIPadding.PaddingTop = UDim.new(0, 10)
+	
+	-- Event Handlers
+	Button.MouseButton1Click:Connect(function()
+		ElementToggle(true)
+	end)
+	
+	CloseButton.MouseButton1Click:Connect(function()
+		ElementToggle(false)
+	end)
+	
+	Fatality:CreateHover(CloseButton, function(bool)
+		if bool then
+			Fatality:CreateAnimation(CloseButton, 0.3, {
+				ImageTransparency = 0.2
+			})
+		else
+			Fatality:CreateAnimation(CloseButton, 0.3, {
+				ImageTransparency = 0.5
+			})
+		end
+	end)
+	
+	game:GetService('UserInputService').InputBegan:Connect(function(Input, Typing)
+		if Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if UIToggle and not Fatality:IsMouseOverFrame(SettingsFrame) then
+				ElementToggle(false)
+			end
+		end
+	end)
+	
+	-- Settings Creation Functions
+	local function CreateSection(name)
+		local SectionFrame = Instance.new("Frame")
+		local SectionLabel = Instance.new("TextLabel")
+		local SectionLine = Instance.new("Frame")
+		local UICorner_Section = Instance.new("UICorner")
+		
+		SectionFrame.Name = "Section_" .. name
+		SectionFrame.Parent = ScrollingFrame
+		SectionFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SectionFrame.BackgroundTransparency = 1.000
+		SectionFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SectionFrame.BorderSizePixel = 0
+		SectionFrame.Size = UDim2.new(1, 0, 0, 30)
+		SectionFrame.ZIndex = 302
+		
+		SectionLabel.Name = "SectionLabel"
+		SectionLabel.Parent = SectionFrame
+		SectionLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SectionLabel.BackgroundTransparency = 1.000
+		SectionLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SectionLabel.BorderSizePixel = 0
+		SectionLabel.Position = UDim2.new(0, 0, 0, 0)
+		SectionLabel.Size = UDim2.new(1, 0, 1, 0)
+		SectionLabel.ZIndex = 303
+		SectionLabel.FontFace = Fatality.FontSemiBold
+		SectionLabel.Text = name
+		SectionLabel.TextColor3 = Fatality.Colors.Main
+		SectionLabel.TextSize = 14.000
+		SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+		
+		SectionLine.Name = "SectionLine"
+		SectionLine.Parent = SectionFrame
+		SectionLine.AnchorPoint = Vector2.new(0, 1)
+		SectionLine.BackgroundColor3 = Fatality.Colors.Main
+		SectionLine.BackgroundTransparency = 0.7
+		SectionLine.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SectionLine.BorderSizePixel = 0
+		SectionLine.Position = UDim2.new(0, 0, 1, -2)
+		SectionLine.Size = UDim2.new(1, 0, 0, 1)
+		SectionLine.ZIndex = 302
+		
+		UICorner_Section.CornerRadius = UDim.new(1, 0)
+		UICorner_Section.Parent = SectionLine
+		
+		return SectionFrame
+	end
+	
+	local function CreateToggle(name, description, defaultValue, callback)
+		local ToggleFrame = Instance.new("Frame")
+		local ToggleLabel = Instance.new("TextLabel")
+		local ToggleDesc = Instance.new("TextLabel")
+		local ToggleButton = Instance.new("ImageButton")
+		local UICorner_Toggle = Instance.new("UICorner")
+		local ToggleIndicator = Instance.new("Frame")
+		local UICorner_Indicator = Instance.new("UICorner")
+		
+		local isToggled = defaultValue or false
+		
+		ToggleFrame.Name = "Toggle_" .. name
+		ToggleFrame.Parent = ScrollingFrame
+		ToggleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		ToggleFrame.BackgroundTransparency = 0.3
+		ToggleFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ToggleFrame.BorderSizePixel = 0
+		ToggleFrame.Size = UDim2.new(1, 0, 0, 60)
+		ToggleFrame.ZIndex = 302
+		
+		local UICorner_Frame = Instance.new("UICorner")
+		UICorner_Frame.CornerRadius = UDim.new(0, 4)
+		UICorner_Frame.Parent = ToggleFrame
+		
+		ToggleLabel.Name = "ToggleLabel"
+		ToggleLabel.Parent = ToggleFrame
+		ToggleLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ToggleLabel.BackgroundTransparency = 1.000
+		ToggleLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ToggleLabel.BorderSizePixel = 0
+		ToggleLabel.Position = UDim2.new(0, 10, 0, 5)
+		ToggleLabel.Size = UDim2.new(1, -60, 0, 20)
+		ToggleLabel.ZIndex = 303
+		ToggleLabel.FontFace = Fatality.FontSemiBold
+		ToggleLabel.Text = name
+		ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		ToggleLabel.TextSize = 13.000
+		ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+		
+		ToggleDesc.Name = "ToggleDesc"
+		ToggleDesc.Parent = ToggleFrame
+		ToggleDesc.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ToggleDesc.BackgroundTransparency = 1.000
+		ToggleDesc.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ToggleDesc.BorderSizePixel = 0
+		ToggleDesc.Position = UDim2.new(0, 10, 0, 25)
+		ToggleDesc.Size = UDim2.new(1, -60, 0, 30)
+		ToggleDesc.ZIndex = 303
+		ToggleDesc.FontFace = Fatality.FontRegular
+		ToggleDesc.Text = description
+		ToggleDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
+		ToggleDesc.TextSize = 11.000
+		ToggleDesc.TextWrapped = true
+		ToggleDesc.TextXAlignment = Enum.TextXAlignment.Left
+		ToggleDesc.TextYAlignment = Enum.TextYAlignment.Top
+		
+		ToggleButton.Name = "ToggleButton"
+		ToggleButton.Parent = ToggleFrame
+		ToggleButton.AnchorPoint = Vector2.new(1, 0.5)
+		ToggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		ToggleButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ToggleButton.BorderSizePixel = 0
+		ToggleButton.Position = UDim2.new(1, -10, 0.5, 0)
+		ToggleButton.Size = UDim2.new(0, 40, 0, 20)
+		ToggleButton.ZIndex = 303
+		ToggleButton.Image = ""
+		
+		UICorner_Toggle.CornerRadius = UDim.new(1, 0)
+		UICorner_Toggle.Parent = ToggleButton
+		
+		ToggleIndicator.Name = "ToggleIndicator"
+		ToggleIndicator.Parent = ToggleButton
+		ToggleIndicator.AnchorPoint = Vector2.new(0, 0.5)
+		ToggleIndicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ToggleIndicator.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ToggleIndicator.BorderSizePixel = 0
+		ToggleIndicator.Position = UDim2.new(0, 2, 0.5, 0)
+		ToggleIndicator.Size = UDim2.new(0, 16, 0, 16)
+		ToggleIndicator.ZIndex = 304
+		
+		UICorner_Indicator.CornerRadius = UDim.new(1, 0)
+		UICorner_Indicator.Parent = ToggleIndicator
+		
+		local function UpdateToggle()
+			if isToggled then
+				Fatality:CreateAnimation(ToggleButton, 0.3, {
+					BackgroundColor3 = Fatality.Colors.Main
+				})
+				Fatality:CreateAnimation(ToggleIndicator, 0.3, {
+					Position = UDim2.new(1, -18, 0.5, 0)
+				})
+			else
+				Fatality:CreateAnimation(ToggleButton, 0.3, {
+					BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+				})
+				Fatality:CreateAnimation(ToggleIndicator, 0.3, {
+					Position = UDim2.new(0, 2, 0.5, 0)
+				})
+			end
+		end
+		
+		UpdateToggle()
+		
+		ToggleButton.MouseButton1Click:Connect(function()
+			isToggled = not isToggled
+			UpdateToggle()
+			if callback then
+				callback(isToggled)
+			end
+		end)
+		
+		Fatality:CreateHover(ToggleButton, function(bool)
+			if bool then
+				Fatality:CreateAnimation(ToggleButton, 0.2, {
+					Size = UDim2.new(0, 42, 0, 22)
+				})
+			else
+				Fatality:CreateAnimation(ToggleButton, 0.2, {
+					Size = UDim2.new(0, 40, 0, 20)
+				})
+			end
+		end)
+		
+		return ToggleFrame, function(value)
+			isToggled = value
+			UpdateToggle()
+		end
+	end
+	
+	local function CreateSlider(name, description, min, max, defaultValue, callback)
+		local SliderFrame = Instance.new("Frame")
+		local SliderLabel = Instance.new("TextLabel")
+		local SliderDesc = Instance.new("TextLabel")
+		local SliderValueLabel = Instance.new("TextLabel")
+		local SliderTrack = Instance.new("Frame")
+		local SliderFill = Instance.new("Frame")
+		local SliderButton = Instance.new("ImageButton")
+		
+		local currentValue = defaultValue or min
+		local isDragging = false
+		
+		SliderFrame.Name = "Slider_" .. name
+		SliderFrame.Parent = ScrollingFrame
+		SliderFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		SliderFrame.BackgroundTransparency = 0.3
+		SliderFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SliderFrame.BorderSizePixel = 0
+		SliderFrame.Size = UDim2.new(1, 0, 0, 70)
+		SliderFrame.ZIndex = 302
+		
+		local UICorner_Frame = Instance.new("UICorner")
+		UICorner_Frame.CornerRadius = UDim.new(0, 4)
+		UICorner_Frame.Parent = SliderFrame
+		
+		SliderLabel.Name = "SliderLabel"
+		SliderLabel.Parent = SliderFrame
+		SliderLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderLabel.BackgroundTransparency = 1.000
+		SliderLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SliderLabel.BorderSizePixel = 0
+		SliderLabel.Position = UDim2.new(0, 10, 0, 5)
+		SliderLabel.Size = UDim2.new(1, -80, 0, 20)
+		SliderLabel.ZIndex = 303
+		SliderLabel.FontFace = Fatality.FontSemiBold
+		SliderLabel.Text = name
+		SliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		SliderLabel.TextSize = 13.000
+		SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
+		
+		SliderValueLabel.Name = "SliderValueLabel"
+		SliderValueLabel.Parent = SliderFrame
+		SliderValueLabel.AnchorPoint = Vector2.new(1, 0)
+		SliderValueLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderValueLabel.BackgroundTransparency = 1.000
+		SliderValueLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SliderValueLabel.BorderSizePixel = 0
+		SliderValueLabel.Position = UDim2.new(1, -10, 0, 5)
+		SliderValueLabel.Size = UDim2.new(0, 60, 0, 20)
+		SliderValueLabel.ZIndex = 303
+		SliderValueLabel.FontFace = Fatality.FontSemiBold
+		SliderValueLabel.Text = tostring(currentValue)
+		SliderValueLabel.TextColor3 = Fatality.Colors.Main
+		SliderValueLabel.TextSize = 13.000
+		SliderValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+		
+		SliderDesc.Name = "SliderDesc"
+		SliderDesc.Parent = SliderFrame
+		SliderDesc.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderDesc.BackgroundTransparency = 1.000
+		SliderDesc.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SliderDesc.BorderSizePixel = 0
+		SliderDesc.Position = UDim2.new(0, 10, 0, 25)
+		SliderDesc.Size = UDim2.new(1, -20, 0, 20)
+		SliderDesc.ZIndex = 303
+		SliderDesc.FontFace = Fatality.FontRegular
+		SliderDesc.Text = description
+		SliderDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
+		SliderDesc.TextSize = 11.000
+		SliderDesc.TextXAlignment = Enum.TextXAlignment.Left
+		
+		SliderTrack.Name = "SliderTrack"
+		SliderTrack.Parent = SliderFrame
+		SliderTrack.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		SliderTrack.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SliderTrack.BorderSizePixel = 0
+		SliderTrack.Position = UDim2.new(0, 10, 1, -15)
+		SliderTrack.Size = UDim2.new(1, -20, 0, 4)
+		SliderTrack.ZIndex = 303
+		
+		local UICorner_Track = Instance.new("UICorner")
+		UICorner_Track.CornerRadius = UDim.new(1, 0)
+		UICorner_Track.Parent = SliderTrack
+		
+		SliderFill.Name = "SliderFill"
+		SliderFill.Parent = SliderTrack
+		SliderFill.BackgroundColor3 = Fatality.Colors.Main
+		SliderFill.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SliderFill.BorderSizePixel = 0
+		SliderFill.Position = UDim2.new(0, 0, 0, 0)
+		SliderFill.Size = UDim2.new((currentValue - min) / (max - min), 0, 1, 0)
+		SliderFill.ZIndex = 304
+		
+		local UICorner_Fill = Instance.new("UICorner")
+		UICorner_Fill.CornerRadius = UDim.new(1, 0)
+		UICorner_Fill.Parent = SliderFill
+		
+		SliderButton.Name = "SliderButton"
+		SliderButton.Parent = SliderTrack
+		SliderButton.AnchorPoint = Vector2.new(0.5, 0.5)
+		SliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SliderButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SliderButton.BorderSizePixel = 0
+		SliderButton.Position = UDim2.new((currentValue - min) / (max - min), 0, 0.5, 0)
+		SliderButton.Size = UDim2.new(0, 12, 0, 12)
+		SliderButton.ZIndex = 305
+		SliderButton.Image = ""
+		
+		local UICorner_Button = Instance.new("UICorner")
+		UICorner_Button.CornerRadius = UDim.new(1, 0)
+		UICorner_Button.Parent = SliderButton
+		
+		local function UpdateSlider(value)
+			currentValue = math.clamp(value, min, max)
+			local percentage = (currentValue - min) / (max - min)
+			
+			SliderValueLabel.Text = tostring(math.floor(currentValue * 100) / 100)
+			SliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+			SliderButton.Position = UDim2.new(percentage, 0, 0.5, 0)
+			
+			if callback then
+				callback(currentValue)
+			end
+		end
+		
+		SliderButton.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				isDragging = true
+			end
+		end)
+		
+		game:GetService("UserInputService").InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				isDragging = false
+			end
+		end)
+		
+		game:GetService("UserInputService").InputChanged:Connect(function(input)
+			if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+				local mouse = game.Players.LocalPlayer:GetMouse()
+				local percentage = math.clamp((mouse.X - SliderTrack.AbsolutePosition.X) / SliderTrack.AbsoluteSize.X, 0, 1)
+				local value = min + (max - min) * percentage
+				UpdateSlider(value)
+			end
+		end)
+		
+		SliderTrack.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				local mouse = game.Players.LocalPlayer:GetMouse()
+				local percentage = math.clamp((mouse.X - SliderTrack.AbsolutePosition.X) / SliderTrack.AbsoluteSize.X, 0, 1)
+				local value = min + (max - min) * percentage
+				UpdateSlider(value)
+			end
+		end)
+		
+		return SliderFrame, function(value)
+			UpdateSlider(value)
+		end
+	end
+	
+	local function CreateColorPicker(name, description, defaultColor, callback)
+		local ColorFrame = Instance.new("Frame")
+		local ColorLabel = Instance.new("TextLabel")
+		local ColorDesc = Instance.new("TextLabel")
+		local ColorPreview = Instance.new("Frame")
+		local ColorButton = Instance.new("ImageButton")
+		
+		local currentColor = defaultColor or Color3.fromRGB(255, 255, 255)
+		
+		ColorFrame.Name = "Color_" .. name
+		ColorFrame.Parent = ScrollingFrame
+		ColorFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		ColorFrame.BackgroundTransparency = 0.3
+		ColorFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ColorFrame.BorderSizePixel = 0
+		ColorFrame.Size = UDim2.new(1, 0, 0, 60)
+		ColorFrame.ZIndex = 302
+		
+		local UICorner_Frame = Instance.new("UICorner")
+		UICorner_Frame.CornerRadius = UDim.new(0, 4)
+		UICorner_Frame.Parent = ColorFrame
+		
+		ColorLabel.Name = "ColorLabel"
+		ColorLabel.Parent = ColorFrame
+		ColorLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ColorLabel.BackgroundTransparency = 1.000
+		ColorLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ColorLabel.BorderSizePixel = 0
+		ColorLabel.Position = UDim2.new(0, 10, 0, 5)
+		ColorLabel.Size = UDim2.new(1, -60, 0, 20)
+		ColorLabel.ZIndex = 303
+		ColorLabel.FontFace = Fatality.FontSemiBold
+		ColorLabel.Text = name
+		ColorLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		ColorLabel.TextSize = 13.000
+		ColorLabel.TextXAlignment = Enum.TextXAlignment.Left
+		
+		ColorDesc.Name = "ColorDesc"
+		ColorDesc.Parent = ColorFrame
+		ColorDesc.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ColorDesc.BackgroundTransparency = 1.000
+		ColorDesc.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ColorDesc.BorderSizePixel = 0
+		ColorDesc.Position = UDim2.new(0, 10, 0, 25)
+		ColorDesc.Size = UDim2.new(1, -60, 0, 30)
+		ColorDesc.ZIndex = 303
+		ColorDesc.FontFace = Fatality.FontRegular
+		ColorDesc.Text = description
+		ColorDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
+		ColorDesc.TextSize = 11.000
+		ColorDesc.TextWrapped = true
+		ColorDesc.TextXAlignment = Enum.TextXAlignment.Left
+		ColorDesc.TextYAlignment = Enum.TextYAlignment.Top
+		
+		ColorPreview.Name = "ColorPreview"
+		ColorPreview.Parent = ColorFrame
+		ColorPreview.AnchorPoint = Vector2.new(1, 0.5)
+		ColorPreview.BackgroundColor3 = currentColor
+		ColorPreview.BorderColor3 = Color3.fromRGB(60, 60, 60)
+		ColorPreview.BorderSizePixel = 1
+		ColorPreview.Position = UDim2.new(1, -10, 0.5, 0)
+		ColorPreview.Size = UDim2.new(0, 30, 0, 30)
+		ColorPreview.ZIndex = 303
+		
+		local UICorner_Preview = Instance.new("UICorner")
+		UICorner_Preview.CornerRadius = UDim.new(0, 4)
+		UICorner_Preview.Parent = ColorPreview
+		
+		ColorButton.Name = "ColorButton"
+		ColorButton.Parent = ColorPreview
+		ColorButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ColorButton.BackgroundTransparency = 1.000
+		ColorButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		ColorButton.BorderSizePixel = 0
+		ColorButton.Size = UDim2.new(1, 0, 1, 0)
+		ColorButton.ZIndex = 304
+		ColorButton.Image = ""
+		
+		ColorButton.MouseButton1Click:Connect(function()
+			-- Simple color picker - cycle through predefined colors
+			local colors = {
+				Color3.fromRGB(255, 100, 100), -- Red
+				Color3.fromRGB(100, 255, 100), -- Green  
+				Color3.fromRGB(100, 100, 255), -- Blue
+				Color3.fromRGB(255, 255, 100), -- Yellow
+				Color3.fromRGB(255, 100, 255), -- Magenta
+				Color3.fromRGB(100, 255, 255), -- Cyan
+				Color3.fromRGB(255, 255, 255), -- White
+				Color3.fromRGB(150, 150, 150), -- Gray
+			}
+			
+			local currentIndex = 1
+			for i, color in ipairs(colors) do
+				if currentColor == color then
+					currentIndex = i
+					break
+				end
+			end
+			
+			currentIndex = currentIndex % #colors + 1
+			currentColor = colors[currentIndex]
+			ColorPreview.BackgroundColor3 = currentColor
+			
+			if callback then
+				callback(currentColor)
+			end
+		end)
+		
+		Fatality:CreateHover(ColorButton, function(bool)
+			if bool then
+				Fatality:CreateAnimation(ColorPreview, 0.2, {
+					Size = UDim2.new(0, 32, 0, 32)
+				})
+			else
+				Fatality:CreateAnimation(ColorPreview, 0.2, {
+					Size = UDim2.new(0, 30, 0, 30)
+				})
+			end
+		end)
+		
+		return ColorFrame, function(color)
+			currentColor = color
+			ColorPreview.BackgroundColor3 = currentColor
+		end
+	end
+	
+	-- Create Settings Sections
+	local configSection = CreateSection("Config Settings")
+	
+	local autoSaveToggle, setAutoSave = CreateToggle(
+		"Auto Save Config",
+		"Automatically save config when changes are made",
+		false,
+		function(value)
+			Fatal.ConfigSettings = Fatal.ConfigSettings or {}
+			Fatal.ConfigSettings.AutoSave = value
+			print("Auto Save Config:", value)
+		end
+	)
+	
+	local autoLoadToggle, setAutoLoad = CreateToggle(
+		"Show AutoLoad Indicator",
+		"Show visual indicator when AutoLoad is enabled",
+		true,
+		function(value)
+			Fatal.ConfigSettings = Fatal.ConfigSettings or {}
+			Fatal.ConfigSettings.ShowAutoLoadIndicator = value
+			print("Show AutoLoad Indicator:", value)
+		end
+	)
+	
+	local configBackupToggle, setConfigBackup = CreateToggle(
+		"Create Config Backups",
+		"Create backup copies when overwriting configs",
+		true,
+		function(value)
+			Fatal.ConfigSettings = Fatal.ConfigSettings or {}
+			Fatal.ConfigSettings.CreateBackups = value
+			print("Create Config Backups:", value)
+		end
+	)
+	
+	local themeSection = CreateSection("Theme Settings")
+	
+	local accentColorPicker, setAccentColor = CreateColorPicker(
+		"Accent Color",
+		"Main accent color for the UI theme",
+		Fatality.Colors.Main,
+		function(color)
+			Fatality.Colors.Main = color
+			print("Accent Color changed to:", color)
+			-- You can add code here to update all UI elements with the new color
+		end
+	)
+	
+	local backgroundColorPicker, setBackgroundColor = CreateColorPicker(
+		"Background Color",
+		"Background color for UI elements",
+		Fatality.Colors.Black,
+		function(color)
+			Fatality.Colors.Black = color
+			print("Background Color changed to:", color)
+		end
+	)
+	
+	local uiScaleSlider, setUIScale = CreateSlider(
+		"UI Scale",
+		"Scale factor for the entire UI",
+		0.5, 2.0, 1.0,
+		function(value)
+			Fatal.UISettings = Fatal.UISettings or {}
+			Fatal.UISettings.Scale = value
+			print("UI Scale:", value)
+			-- You can add code here to scale the UI
+		end
+	)
+	
+	local animationSpeedSlider, setAnimationSpeed = CreateSlider(
+		"Animation Speed",
+		"Speed multiplier for UI animations",
+		0.1, 3.0, 1.0,
+		function(value)
+			Fatal.UISettings = Fatal.UISettings or {}
+			Fatal.UISettings.AnimationSpeed = value
+			print("Animation Speed:", value)
+		end
+	)
+	
+	local transparencySlider, setTransparency = CreateSlider(
+		"UI Transparency",
+		"Overall transparency of UI elements",
+		0.0, 0.8, 0.0,
+		function(value)
+			Fatal.UISettings = Fatal.UISettings or {}
+			Fatal.UISettings.Transparency = value
+			print("UI Transparency:", value)
+		end
+	)
+	
+	-- Advanced Settings Section
+	local advancedSection = CreateSection("Advanced Settings")
+	
+	local debugModeToggle, setDebugMode = CreateToggle(
+		"Debug Mode",
+		"Enable debug output and additional information",
+		false,
+		function(value)
+			Fatal.AdvancedSettings = Fatal.AdvancedSettings or {}
+			Fatal.AdvancedSettings.DebugMode = value
+			print("Debug Mode:", value)
+		end
+	)
+	
+	local performanceModeToggle, setPerformanceMode = CreateToggle(
+		"Performance Mode",
+		"Reduce animations and effects for better performance",
+		false,
+		function(value)
+			Fatal.AdvancedSettings = Fatal.AdvancedSettings or {}
+			Fatal.AdvancedSettings.PerformanceMode = value
+			print("Performance Mode:", value)
+		end
+	)
+	
+	-- Return settings interface
+	local res = Fatality:CreateResponse({
+		Show = function()
+			ElementToggle(true)
+		end,
+		
+		Hide = function()
+			ElementToggle(false)
+		end,
+		
+		Toggle = function()
+			ElementToggle(not UIToggle)
+		end,
+		
+		-- Getters for current settings
+		GetConfigSettings = function()
+			return Fatal.ConfigSettings or {}
+		end,
+		
+		GetUISettings = function()
+			return Fatal.UISettings or {}
+		end,
+		
+		GetAdvancedSettings = function()
+			return Fatal.AdvancedSettings or {}
+		end,
+		
+		-- Setters for programmatic control
+		SetAutoSave = setAutoSave,
+		SetAutoLoad = setAutoLoad,
+		SetConfigBackup = setConfigBackup,
+		SetAccentColor = setAccentColor,
+		SetBackgroundColor = setBackgroundColor,
+		SetUIScale = setUIScale,
+		SetAnimationSpeed = setAnimationSpeed,
+		SetTransparency = setTransparency,
+		SetDebugMode = setDebugMode,
+		SetPerformanceMode = setPerformanceMode,
+	})
+	
+	return res
+end
 
 function Fatality.new(Window: Window)
 	Window = Window or {};
