@@ -279,79 +279,6 @@ end,function()
 	return Client.PlayerGui;
 end);
 
--- Safe integration example
-local function setupFatalityWithThemes()
-    -- Check if required functions exist
-    local requiredFunctions = {
-        "isfolder", "makefolder", "writefile", "readfile", "isfile", "listfiles"
-    }
-    
-    local missingFunctions = {}
-    for _, func in pairs(requiredFunctions) do
-        if not _G[func] then
-            table.insert(missingFunctions, func)
-        end
-    end
-    
-    if #missingFunctions > 0 then
-        warn("Missing functions:", table.concat(missingFunctions, ", "))
-        warn("Theme and Config systems may not work properly")
-    end
-    
-    -- Load Fatality
-    local Fatality = loadstring(game:HttpGet("YOUR_FATALITY_URL"))()
-    
-    -- Load ThemeManager
-    local ThemeManager = loadstring(game:HttpGet("YOUR_THEME_MANAGER_URL"))()
-    
-    -- Create window
-    local window = Fatality.new({
-        Name = "HBP",
-        Scale = UDim2.new(0, 750, 0, 500),
-        Keybind = "Insert"
-    })
-    
-    -- Setup ThemeManager
-    if ThemeManager then
-        ThemeManager:SetLibrary(window)
-        
-        -- Create settings menu
-        local settingsMenu = window:AddMenu({
-            Name = "SETTINGS",
-            Icon = "settings"
-        })
-        
-        -- Add theme manager
-        local success = pcall(function()
-            ThemeManager:CreateThemeMenu(settingsMenu)
-        end)
-        
-        if success then
-            print("Theme Manager loaded successfully!")
-            ThemeManager:ApplyTheme("Default")
-        else
-            warn("Failed to load Theme Manager")
-        end
-    end
-    
-    -- Setup Config System
-    if window.AddConfig then
-        local configManager = window:AddConfig()
-        if configManager and configManager.Init then
-            configManager:Init("HBP", "HBPConfigs")
-            print("Config System loaded successfully!")
-        end
-    end
-    
-    return window
-end
-
--- Execute
-local success, result = pcall(setupFatalityWithThemes)
-if not success then
-    warn("Setup failed:", result)
-end
-
 -- Fatality --
 local Fatality = {};
 
@@ -4008,303 +3935,349 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	};
 
 	local res;
-    res = Fatality:CreateResponse({
-        SetFiles = function(configs,bypass)
-            local OldLen = #Configs;
-            Configs = configs;
+	res = Fatality:CreateResponse({
+		SetFiles = function(configs,bypass)
+			local OldLen = #Configs;
+			Configs = configs;
+			if OldLen ~= #configs and not bypass then
+				res:ReloadConfig();
+			end;
+		end,
 
-            if OldLen ~= #configs and not bypass then
-                res:ReloadConfig();
-            end;
-        end,
+		Refresh = function()
+			for i,v in next , ScrollingFrame:GetChildren() do
+				if v:IsA('TextButton') then
+					v:Destroy();
+				end;
+			end;
 
-        Refresh = function()
-            for i,v in next , ScrollingFrame:GetChildren() do
-                if v:IsA('TextButton') then
-                    v:Destroy();
-                end;
-            end;
+			for i,v in next, Configs do
+				local button = new_button();
+				button.Parent = ScrollingFrame;
+				button.Text = " "..tostring(v);
 
-            for i,v in next, Configs do
-                local button = new_button();
-                button.Parent = ScrollingFrame;
-                button.Text = " "..tostring(v);
+				if tostring(import.Name) == tostring(v) or import.Name == v then
+					import.Element = button;
+					import.Name = v;
+					import.Element.TextColor3 = Fatality.Colors.Main;
+					button.Text = "  "..tostring(v);
+				end;
 
-                if tostring(import.Name) == tostring(v) or import.Name == v then
-                    import.Element = button;
-                    import.Name = v;
-                    import.Element.TextColor3 = Fatality.Colors.Main;
-                    button.Text = "  "..tostring(v);
-                end;
+				button.MouseButton1Click:Connect(function()
+					if import.Element then
+						import.Element.TextColor3 = Color3.fromRGB(150, 150, 150);
+						import.Element.Text = " "..import.Name;
+					end;
+					import.Element = button;
+					import.Name = v;
+					button.TextColor3 = Fatality.Colors.Main;
+					button.Text = "  "..tostring(v);
+				end);
+			end;
+		end,
 
-                button.MouseButton1Click:Connect(function()
-                    if import.Element then
-                        import.Element.TextColor3 = Color3.fromRGB(150, 150, 150);
-                        import.Element.Text = " "..import.Name;
-                    end;
+		ReloadConfig = function()
+			if not res.ConfigDirectory then
+				warn("Config directory not found");
+				return;
+			end;
 
-                    import.Element = button;
-                    import.Name = v;
-                    button.TextColor3 = Fatality.Colors.Main;
-                    button.Text = "  "..tostring(v);
-                end);
-            end;
-        end,
+			local success, files = pcall(function()
+				local fileList = {};
+				local allFiles = listfiles(res.ConfigDirectory);
+				
+				for i,v in next , allFiles do
+					local spl = (string.find(v,'/',1,true) and string.split(v,'/')) or (string.find(v,'\\',1,true) and string.split(v,'\\'));
+					local name = spl[#spl];
+					-- Fixed: Only add files with valid extensions
+					if string.find(name, "%.") then
+						table.insert(fileList, name);
+					end;
+				end;
+				return fileList;
+			end);
 
-        ReloadConfig = function()
-            if not res.ConfigDirectory then 
-                print("Config directory not found")
-                return 
-            end;
+			if success then
+				res:SetFiles(files, true);
+				res:Refresh();
+			else
+				warn("Failed to reload configs: " .. tostring(files));
+			end;
+		end,
 
-            local files = {};
-            
-            -- Sử dụng pcall để tránh lỗi
-            local success, fileList = pcall(function()
-                return listfiles(res.ConfigDirectory)
-            end)
-            
-            if not success then
-                print("Failed to list files:", fileList)
-                return
-            end
+		DeleteConfig = function(name)
+			if not res.ConfigDirectory then
+				warn("Config directory not found");
+				return;
+			end;
 
-            for i,v in next , fileList do
-                local spl = (string.find(v,'/',1,true) and string.split(v,'/')) or (string.find(v,'\\',1,true) and string.split(v,'\\'));
-                if spl then
-                    local name = spl[#spl];
-                    if name and name:sub(-5) == ".json" then
-                        table.insert(files, name:sub(1, -6)); -- Remove .json extension
-                    end
-                end
-            end;
+			local path = res.ConfigDirectory..'/'..tostring(name);
+			local success, err = pcall(function()
+				if isfile(path) then
+					delfile(path);
+					return true;
+				end;
+				return false;
+			end);
 
-            res:SetFiles(files,true);
-            res:Refresh();
-        end,
+			if not success then
+				warn("Failed to delete config: " .. tostring(err));
+			end;
+		end,
 
-        DeleteConfig = function(name)
-            if not res.ConfigDirectory then 
-                print("Config directory not found")
-                return 
-            end;
+		SaveConfig = function(name, content)
+			-- Fixed: Better input validation
+			if not name or name == "" then
+				warn("Config name cannot be empty");
+				return false;
+			end;
 
-            local path = res.ConfigDirectory..'/'..tostring(name)..'.json';
+			-- Fixed: Sanitize filename
+			local sanitizedName = string.gsub(name, "[/\\:*?\"<>|]", "");
+			if sanitizedName ~= name then
+				warn("Config name contains invalid characters, using: " .. sanitizedName);
+				name = sanitizedName;
+			end;
 
-            if isfile(path) then
-                local success, err = pcall(delfile, path)
-                if not success then
-                    print("Failed to delete config:", err)
-                end
-                return success
-            end;
-            return false
-        end,
+			if not res.ConfigDirectory then
+				warn("Config directory not found");
+				return false;
+			end;
 
-        SaveConfig = function(name,content)
-            if string.find(name,'/',1,true) or string.find(name,'\\',1,true) or string.find(name,':',1,true) then
-                print("Invalid config name")
-                return false;	
-            end;
+			local path = res.ConfigDirectory..'/'..tostring(name);
+			
+			-- Fixed: Add file extension if not present
+			if not string.find(path, "%.json$") then
+				path = path .. ".json";
+			end;
 
-            if not res.ConfigDirectory then 
-                print("Config directory not found")
-                return false
-            end;
+			local success, err = pcall(function()
+				writefile(path, content);
+			end);
 
-            local path = res.ConfigDirectory..'/'..tostring(name)..'.json';
+			if success then
+				print("Config saved successfully: " .. path);
+				return true;
+			else
+				warn("Failed to save config: " .. tostring(err));
+				return false;
+			end;
+		end,
 
-            local success, err = pcall(function()
-                writefile(path , content);
-            end)
-            
-            if not success then
-                print("Failed to save config:", err)
-            end
-            
-            return success
-        end,
+		LoadConfig = function(name)
+			if not res.ConfigDirectory then
+				warn("Config directory not found");
+				return false;
+			end;
 
-        LoadConfig = function(name)
-            if not res.ConfigDirectory then 
-                print("Config directory not found")
-                return false
-            end;
+			local path = res.ConfigDirectory..'/'..tostring(name);
+			
+			-- Fixed: Try with .json extension if file doesn't exist
+			if not isfile(path) and not string.find(path, "%.json$") then
+				path = path .. ".json";
+			end;
 
-            local path = res.ConfigDirectory..'/'..tostring(name)..'.json';
+			local success, result = pcall(function()
+				if isfile(path) then
+					local content = readfile(path);
+					local decoded = game:GetService('HttpService'):JSONDecode(content);
+					return decoded;
+				else
+					error("File not found: " .. path);
+				end;
+			end);
 
-            if isfile(path) then
-                local success, content = pcall(readfile, path)
-                if not success then
-                    print("Failed to read config file:", content)
-                    return false
-                end
-                
-                local decodeSuccess, decoded = pcall(function()
-                    return HttpService:JSONDecode(content)
-                end)
-                
-                if not decodeSuccess then
-                    print("Failed to decode config:", decoded)
-                    return false
-                end
+			if success then
+				Fatal.Notifier:Notify({
+					Title = "Config",
+					Content = "Loaded config '"..tostring(name).."'",
+					Icon = "settings",
+					Duration = 4,
+				});
+				Fatal:LoadConfig(result);
+				return true;
+			else
+				warn("Failed to load config: " .. tostring(result));
+				Fatal.Notifier:Notify({
+					Title = "Config Error",
+					Content = "Failed to load config: " .. tostring(name),
+					Icon = "alert-circle",
+					Duration = 4,
+				});
+				return false;
+			end;
+		end,
 
-                Fatal.Notifier:Notify({
-                    Title = "Config",
-                    Content = "Loaded config '"..tostring(name).."'",
-                    Icon = "settings",
-                    Duration = 4,
-                });
+		Init = function(Name: string, Folder: string)
+			-- Fixed: Better error handling for folder creation
+			local success, err = pcall(function()
+				if not isfolder(Folder or "Fatality") then
+					makefolder(Folder or "Fatality");	
+				end;
 
-                Fatal:LoadConfig(decoded);
-                return true
-            end;
-            return false
-        end,
+				if not isfolder((Folder or "Fatality").."/Config") then
+					makefolder((Folder or "Fatality").."/Config");	
+				end;
 
-        Init = function(Name: string,Folder: string)
-            -- Tạo folder structure an toàn hơn
-            local basePath = Folder or "Fatality"
-            local configPath = basePath.."/Config"
-            local finalPath = configPath.."/"..tostring(Name)
-            
-            -- Tạo từng folder một cách an toàn
-            local success1, err1 = pcall(function()
-                if not isfolder(basePath) then
-                    makefolder(basePath);	
-                end;
-            end)
-            
-            local success2, err2 = pcall(function()
-                if not isfolder(configPath) then
-                    makefolder(configPath);	
-                end;
-            end)
-            
-            local success3, err3 = pcall(function()
-                if not isfolder(finalPath) then
-                    makefolder(finalPath)
-                end;
-            end)
-            
-            if not (success1 and success2 and success3) then
-                print("Failed to create folder structure:", err1, err2, err3)
-                return
-            end
+				local cfgPath = (Folder or "Fatality").."/Config/"..tostring(Name);
 
-            res.ConfigDirectory = finalPath;
+				if not isfolder(cfgPath) then
+					makefolder(cfgPath);
+				end;
 
-            -- Event handlers với error handling
-            AddConfigButton.MouseButton1Click:Connect(function()
-                local configName = TextBox.Text;
+				res.ConfigDirectory = cfgPath;
+			end);
 
-                if not configName:byte() then return end;
+			if not success then
+				warn("Failed to initialize config system: " .. tostring(err));
+				return;
+			end;
 
-                local flags = Fatal:GetFlagConfig();
+			-- Fixed: Better event handling with error checking
+			AddConfigButton.MouseButton1Click:Connect(function()
+				local configName = TextBox.Text;
 
-                flags.Info = {
-                    Name = Name,
-                    Folder = Folder,
-                    ConfigName = configName,
-                };
+				if not configName or configName == "" then
+					Fatal.Notifier:Notify({
+						Title = "Config Error",
+						Content = "Please enter a config name",
+						Icon = "alert-circle",
+						Duration = 3,
+					});
+					return;
+				end;
 
-                local encodeSuccess, code = pcall(function()
-                    return HttpService:JSONEncode(flags)
-                end)
-                
-                if not encodeSuccess then
-                    print("Failed to encode config:", code)
-                    return
-                end
+				local success, err = pcall(function()
+					local flags = Fatal:GetFlagConfig();
+					flags.Info = {
+						Name = Name,
+						Folder = Folder,
+						ConfigName = configName,
+						Timestamp = os.time(),
+						Version = "1.0"
+					};
 
-                local saveSuccess = res:SaveConfig(configName , code);
-                if saveSuccess then
-                    res:ReloadConfig();
+					local code = game:GetService('HttpService'):JSONEncode(flags);
+					return res:SaveConfig(configName, code);
+				end);
 
-                    Fatal.Notifier:Notify({
-                        Title = "Config",
-                        Content = "Saved config '"..tostring(configName).."'",
-                        Icon = "settings",
-                        Duration = 4,
-                    });
+				if success and err then
+					res:ReloadConfig();
+					Fatal.Notifier:Notify({
+						Title = "Config",
+						Content = "Saved config '"..tostring(configName).."'",
+						Icon = "settings",
+						Duration = 4,
+					});
+					TextBox.Text = "";
+				else
+					Fatal.Notifier:Notify({
+						Title = "Config Error",
+						Content = "Failed to save config",
+						Icon = "alert-circle",
+						Duration = 4,
+					});
+				end;
+			end);
 
-                    TextBox.Text = "";
-                else
-                    Fatal.Notifier:Notify({
-                        Title = "Config",
-                        Content = "Failed to save config '"..tostring(configName).."'",
-                        Icon = "alert-triangle",
-                        Duration = 4,
-                    });
-                end
-            end);
+			GetConfigButton.MouseButton1Click:Connect(function()
+				if import and import.Name then
+					res:LoadConfig(import.Name);
+				else
+					Fatal.Notifier:Notify({
+						Title = "Config Error",
+						Content = "Please select a config to load",
+						Icon = "alert-circle",
+						Duration = 3,
+					});
+				end;
+			end);
 
-            GetConfigButton.MouseButton1Click:Connect(function()
-                if import and import.Name then
-                    res:LoadConfig(import.Name);
-                end;
-            end);
+			SaveConfigButton.MouseButton1Click:Connect(function()
+				if import and import.Name then
+					local success, err = pcall(function()
+						local flags = Fatal:GetFlagConfig();
+						local configName = import.Name;
 
-            SaveConfigButton.MouseButton1Click:Connect(function()
-                if import and import.Name then
-                    local flags = Fatal:GetFlagConfig();
-                    local configName = import.Name;
+						flags.Info = {
+							Name = Name,
+							Folder = Folder,
+							ConfigName = configName,
+							Type = "Overwrite",
+							Timestamp = os.time(),
+							Version = "1.0"
+						};
 
-                    flags.Info = {
-                        Name = Name,
-                        Folder = Folder,
-                        ConfigName = configName,
-                        Type = "Overwrite"
-                    };
+						local code = game:GetService('HttpService'):JSONEncode(flags);
+						return res:SaveConfig(configName, code);
+					end);
 
-                    local encodeSuccess, code = pcall(function()
-                        return HttpService:JSONEncode(flags)
-                    end)
-                    
-                    if not encodeSuccess then
-                        print("Failed to encode config:", code)
-                        return
-                    end
+					if success and err then
+						Fatal.Notifier:Notify({
+							Title = "Config",
+							Content = "Saved config '"..tostring(import.Name).."'",
+							Icon = "settings",
+							Duration = 4,
+						});
+						res:ReloadConfig();
+					else
+						Fatal.Notifier:Notify({
+							Title = "Config Error",
+							Content = "Failed to save config",
+							Icon = "alert-circle",
+							Duration = 4,
+						});
+					end;
+				else
+					Fatal.Notifier:Notify({
+						Title = "Config Error",
+						Content = "Please select a config to overwrite",
+						Icon = "alert-circle",
+						Duration = 3,
+					});
+				end;
+			end);
 
-                    local saveSuccess = res:SaveConfig(configName , code);
-                    if saveSuccess then
-                        res:ReloadConfig();
-                        
-                        Fatal.Notifier:Notify({
-                            Title = "Config",
-                            Content = "Saved config '"..tostring(configName).."'",
-                            Icon = "settings",
-                            Duration = 4,
-                        });
-                    end
-                end;
-            end);
+			DeleteButton.MouseButton1Click:Connect(function()
+				if import and import.Name then
+					local success = res:DeleteConfig(import.Name);
+					
+					if success then
+						Fatal.Notifier:Notify({
+							Title = "Config",
+							Content = "Deleted config '"..tostring(import.Name).."'",
+							Icon = "settings",
+							Duration = 4,
+						});
+						res:ReloadConfig();
+						-- Reset selection
+						import.Name = nil;
+						import.Element = nil;
+					else
+						Fatal.Notifier:Notify({
+							Title = "Config Error",
+							Content = "Failed to delete config",
+							Icon = "alert-circle",
+							Duration = 4,
+						});
+					end;
+				else
+					Fatal.Notifier:Notify({
+						Title = "Config Error",
+						Content = "Please select a config to delete",
+						Icon = "alert-circle",
+						Duration = 3,
+					});
+				end;
+			end);
 
-            DeleteButton.MouseButton1Click:Connect(function()
-                if import and import.Name then
-                    local deleteSuccess = res:DeleteConfig(import.Name);
-                    if deleteSuccess then
-                        Fatal.Notifier:Notify({
-                            Title = "Config",
-                            Content = "Deleted config '"..tostring(import.Name).."'",
-                            Icon = "settings",
-                            Duration = 4,
-                        });
+			-- Load existing configs on initialization
+			res:ReloadConfig();
+		end,
+	});
 
-                        res:ReloadConfig();
-                    end
-                end;
-            end)
-            
-            -- Load configs khi khởi tạo
-            res:ReloadConfig();
-        end,
-    });
-
-    return res;
+	return res;
 end;
-
-
 
 function Fatality.new(Window: Window)
 	Window = Window or {};
