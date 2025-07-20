@@ -5010,7 +5010,7 @@ function Fatality.new(Window: Window)
 	end;
 
 	function Fatal:SetExpire(str: string)
-		expire_days.Text = string.format("<font transparency=\"0.5\">expires:</font> <font color=\"#f53174\">%s</font>",str)
+		expire_days.Text = string.format("<font transparency=\"0.5\">expires:</font> <font color=\"#01ffaaff\">%s</font>",str)
 	end;
 
 	function Fatal:GetFlags()
