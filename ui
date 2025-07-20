@@ -2846,7 +2846,7 @@ function Fatality:CreateElements(Parent : Frame , ZIndex : number , Event : Bind
 		Button_Name.ZIndex = ZIndex + 2
 		Button_Name.FontFace = Fatality.FontSemiBold
 		Button_Name.Text = Config.Name
-		Button_Name.TextColor3 = (Config.Risky and Color3.fromRGB(205, 0, 0)) or Color3.fromRGB(255, 255, 255)
+		Button_Name.TextColor3 = (Config.Risky and Color3.fromRGB(255, 160, 92)) or Color3.fromRGB(255, 255, 255)
 		Button_Name.TextSize = 12.000
 		Button_Name.TextTransparency = 0.400
 		Fatality:ProtectText(Button_Name,Config.Name);
@@ -4920,7 +4920,7 @@ function Fatality.new(Window: Window)
 	expire_days.Size = UDim2.new(0, 200, 0, 15)
 	expire_days.ZIndex = 4
 	expire_days.Font = Enum.Font.GothamMedium
-	expire_days.Text = string.format("<font transparency=\"0.5\">expires:</font> <font color=\"#25a319ff\">%s</font>",Window.Expire)
+	expire_days.Text = string.format("<font transparency=\"0.5\">expires:</font> <font color=\"#790073ff\">%s</font>",Window.Expire)
 	expire_days.TextColor3 = Color3.fromRGB(255, 255, 255)
 	expire_days.TextSize = 12.000
 	expire_days.TextStrokeTransparency = 0.700
@@ -6878,7 +6878,7 @@ function Fatality:Loader(Config: Loader)
 
 		StartText.Size = UDim2.new(0, baseSIZX + 100, 0, 50)
 
-		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(80, 0, 105)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 110, 0))}
+		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 0, 80)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 110, 0))}
 		UIGradient.Rotation = 88
 		UIGradient.Parent = StartText
 
