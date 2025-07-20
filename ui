@@ -274,7 +274,7 @@ local Client = Players.LocalPlayer;
 local Mouse = Client:GetMouse();
 local CurrentCamera = workspace.CurrentCamera;
 local _,CoreGui = xpcall(function()
-	return (gethui and gethui()) or game:GetService("CoreGui"):FindFirstChild("RobloxGui");
+	return (gethui and gethui()) or cloneref(game:GetService("CoreGui")):FindFirstChild("RobloxGui");
 end,function()
 	return Client.PlayerGui;
 end);
@@ -289,7 +289,7 @@ Fatality.FontSemiBold = Font.new('rbxasset://fonts/families/GothamSSm.json',Enum
 Fatality.Flags = {};
 Fatality.Colors = {
 	Black = Color3.fromRGB(16, 16, 16),
-	Main = Color3.fromRGB(255, 106, 133)
+	Main = Color3.fromRGB(0, 255, 0)
 };
 Fatality.DragBlacklist = {};
 Fatality.Version = '1.6';
@@ -3971,7 +3971,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		end;
 	end);
 
-	game:GetService('UserInputService').InputBegan:Connect(function(Input,Typing)
+	cloneref(game:GetService('UserInputService')).InputBegan:Connect(function(Input,Typing)
 		if Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1 then
 			if UIToggle and not Fatality:IsMouseOverFrame(ConfigWindowFrame) then
 				ElementToggle(false);
@@ -4178,7 +4178,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 			local success, result = pcall(function()
 				if isfile(path) then
 					local content = readfile(path);
-					local decoded = game:GetService('HttpService'):JSONDecode(content);
+					local decoded = cloneref(game:GetService('HttpService')):JSONDecode(content);
 					return decoded;
 				else
 					error("File not found: " .. path);
@@ -4229,7 +4229,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 					};
 					
 					local autoLoadPath = systemPath.."/autoload.json";
-					local jsonData = game:GetService('HttpService'):JSONEncode(autoLoadData);
+					local jsonData = cloneref(game:GetService('HttpService')):JSONEncode(autoLoadData);
 					writefile(autoLoadPath, jsonData);
 				end);
 				
@@ -4281,7 +4281,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				
 				if isfile(autoLoadPath) then
 					local content = readfile(autoLoadPath);
-					local data = game:GetService('HttpService'):JSONDecode(content);
+					local data = cloneref(game:GetService('HttpService')):JSONDecode(content);
 					
 					if data.enabled and data.config then
 						-- Check if config still exists
@@ -4319,15 +4319,15 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 
 		Init = function(Name: string, Folder: string)
 			local success, err = pcall(function()
-				if not isfolder(Folder or "Fatality") then
-					makefolder(Folder or "Fatality");	
+				if not isfolder(Folder or "HBP") then
+					makefolder(Folder or "HBP");	
 				end;
 
-				if not isfolder((Folder or "Fatality").."/Config") then
-					makefolder((Folder or "Fatality").."/Config");	
+				if not isfolder((Folder or "HBP").."/Config") then
+					makefolder((Folder or "HBP").."/Config");	
 				end;
 
-				local cfgPath = (Folder or "Fatality").."/Config/"..tostring(Name);
+				local cfgPath = (Folder or "HBP").."/Config/"..tostring(Name);
 
 				if not isfolder(cfgPath) then
 					makefolder(cfgPath);
@@ -4365,7 +4365,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 						Version = "1.0"
 					};
 
-					local code = game:GetService('HttpService'):JSONEncode(flags);
+					local code = cloneref(game:GetService('HttpService')):JSONEncode(flags);
 					return res:SaveConfig(configName, code);
 				end);
 
@@ -4416,7 +4416,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 							Version = "1.0"
 						};
 
-						local code = game:GetService('HttpService'):JSONEncode(flags);
+						local code = cloneref(game:GetService('HttpService')):JSONEncode(flags);
 						return res:SaveConfig(configName, code);
 					end);
 
@@ -4509,7 +4509,7 @@ end;
 
 function Fatality.new(Window: Window)
 	Window = Window or {};
-	Window.Name = Window.Name or "FATALITY";
+	Window.Name = Window.Name or "HBP";
 	Window.Scale = Window.Scale or UDim2.new(0, 750, 0, 500);
 	Window.Keybind = Window.Keybind or "Insert";
 	Window.Expire = Window.Expire or "never";
@@ -4825,7 +4825,7 @@ function Fatality.new(Window: Window)
 	HeaderText.Text = Window.Name
 	HeaderText.TextColor3 = Color3.fromRGB(229, 229, 229)
 	HeaderText.TextSize = 21.000
-	HeaderText.TextStrokeColor3 = Color3.fromRGB(205, 67, 218)
+	HeaderText.TextStrokeColor3 = Color3.fromRGB(1, 90, 1)
 	HeaderText.TextStrokeTransparency = 0.640
 
 	MenuButtonCont.Name = Fatality:RandomString()
@@ -6581,7 +6581,7 @@ function Fatality.new(Window: Window)
 		local corner_2 = Instance.new("UICorner")
 		local _5 = Instance.new("Frame")
 
-		backpack.Name = "FATALITY"..Fatality:RandomString();
+		backpack.Name = "HBP"..Fatality:RandomString();
 		backpack.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		backpack.BackgroundTransparency = 1.000
 		backpack.BorderSizePixel = 0
@@ -6718,7 +6718,7 @@ end;
 
 function Fatality:Loader(Config: Loader)
 	Config = Config or {};
-	Config.Name = Config.Name or "FATALITY";
+	Config.Name = Config.Name or "HBP";
 	Config.Duration = Config.Duration or 3.5;
 	Config.Scale = Config.Scale or 3;
 
@@ -6769,7 +6769,7 @@ function Fatality:Loader(Config: Loader)
 	BlackFrame.Size = UDim2.new(1, 0, 1, 0)
 
 	Blur.Size = 0;
-	Blur.Parent = game:GetService('Lighting');
+	Blur.Parent = cloneref(game:GetService('Lighting'));
 
 	Fatality:CreateAnimation(Blur,1,{
 		Size = 60
@@ -6820,7 +6820,7 @@ function Fatality:Loader(Config: Loader)
 		ASCII.Size = UDim2.new(0, textsize.X + 100, 0, 50)
 		LIT.Size = UDim2.new(0, (textsize.X * 2.5) + (UText[TEXT] or 0), 0, 100)
 
-		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 116, 116)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(132, 58, 58))}
+		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 110, 0))}
 		UIGradient.Rotation = 88
 		UIGradient.Parent = ASCII
 
@@ -6878,7 +6878,7 @@ function Fatality:Loader(Config: Loader)
 
 		StartText.Size = UDim2.new(0, baseSIZX + 100, 0, 50)
 
-		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 116, 116)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(132, 58, 58))}
+		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 116, 116)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 110, 0))}
 		UIGradient.Rotation = 88
 		UIGradient.Parent = StartText
 
