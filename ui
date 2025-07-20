@@ -279,6 +279,79 @@ end,function()
 	return Client.PlayerGui;
 end);
 
+-- Safe integration example
+local function setupFatalityWithThemes()
+    -- Check if required functions exist
+    local requiredFunctions = {
+        "isfolder", "makefolder", "writefile", "readfile", "isfile", "listfiles"
+    }
+    
+    local missingFunctions = {}
+    for _, func in pairs(requiredFunctions) do
+        if not _G[func] then
+            table.insert(missingFunctions, func)
+        end
+    end
+    
+    if #missingFunctions > 0 then
+        warn("Missing functions:", table.concat(missingFunctions, ", "))
+        warn("Theme and Config systems may not work properly")
+    end
+    
+    -- Load Fatality
+    local Fatality = loadstring(game:HttpGet("YOUR_FATALITY_URL"))()
+    
+    -- Load ThemeManager
+    local ThemeManager = loadstring(game:HttpGet("YOUR_THEME_MANAGER_URL"))()
+    
+    -- Create window
+    local window = Fatality.new({
+        Name = "HBP",
+        Scale = UDim2.new(0, 750, 0, 500),
+        Keybind = "Insert"
+    })
+    
+    -- Setup ThemeManager
+    if ThemeManager then
+        ThemeManager:SetLibrary(window)
+        
+        -- Create settings menu
+        local settingsMenu = window:AddMenu({
+            Name = "SETTINGS",
+            Icon = "settings"
+        })
+        
+        -- Add theme manager
+        local success = pcall(function()
+            ThemeManager:CreateThemeMenu(settingsMenu)
+        end)
+        
+        if success then
+            print("Theme Manager loaded successfully!")
+            ThemeManager:ApplyTheme("Default")
+        else
+            warn("Failed to load Theme Manager")
+        end
+    end
+    
+    -- Setup Config System
+    if window.AddConfig then
+        local configManager = window:AddConfig()
+        if configManager and configManager.Init then
+            configManager:Init("HBP", "HBPConfigs")
+            print("Config System loaded successfully!")
+        end
+    end
+    
+    return window
+end
+
+-- Execute
+local success, result = pcall(setupFatalityWithThemes)
+if not success then
+    warn("Setup failed:", result)
+end
+
 -- Fatality --
 local Fatality = {};
 
@@ -3934,7 +4007,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		Element = nil;
 	};
 
-    local res;
+	local res;
     res = Fatality:CreateResponse({
         SetFiles = function(configs,bypass)
             local OldLen = #Configs;
@@ -4230,6 +4303,8 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 
     return res;
 end;
+
+
 
 function Fatality.new(Window: Window)
 	Window = Window or {};
@@ -6442,7 +6517,7 @@ end;
 
 function Fatality:Loader(Config: Loader)
 	Config = Config or {};
-	Config.Name = Config.Name or "HBP";
+	Config.Name = Config.Name or "FATALITY";
 	Config.Duration = Config.Duration or 3.5;
 	Config.Scale = Config.Scale or 3;
 
