@@ -3563,9 +3563,14 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	local UICorner_6 = Instance.new("UICorner")
 	local DeleteButton = Instance.new("ImageButton")
 	local UICorner_7 = Instance.new("UICorner")
+	-- AutoLoad Button
+	local AutoLoadButton = Instance.new("ImageButton")
+	local UICorner_8 = Instance.new("UICorner")
+	-- AutoLoad Status Indicator
+	local AutoLoadIndicator = Instance.new("Frame")
+	local UICorner_9 = Instance.new("UICorner")
 
 	Fatality:ScrollSignal(ScrollingFrame,UIListLayout,"Y");
-
 	Fatality:AddDragBlacklist(ConfigWindowFrame);
 
 	local UIToggle = false;
@@ -3576,7 +3581,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 			ConfigWindowFrame.Position = UDim2.fromOffset(Button.AbsolutePosition.X,Button.AbsolutePosition.Y + (Button.AbsoluteSize.Y * 3));
 
 			Fatality:CreateAnimation(ConfigWindowFrame,0.3,{
-				Size = UDim2.new(0, 185, 0, 195),
+				Size = UDim2.new(0, 185, 0, 220),
 			})
 
 			Fatality:CreateAnimation(UIStroke,0.3,{
@@ -3625,6 +3630,14 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 
 			Fatality:CreateAnimation(DeleteButton,0.3,{
 				ImageTransparency = 0.2500
+			})
+
+			Fatality:CreateAnimation(AutoLoadButton,0.3,{
+				ImageTransparency = 0.500
+			})
+
+			Fatality:CreateAnimation(AutoLoadIndicator,0.3,{
+				BackgroundTransparency = 0.8
 			})
 
 			Fatality:CreateAnimation(DropShadow,0.3,{
@@ -3686,11 +3699,20 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 			Fatality:CreateAnimation(DeleteButton,0.3,{
 				ImageTransparency = 1
 			})
+
+			Fatality:CreateAnimation(AutoLoadButton,0.3,{
+				ImageTransparency = 1
+			})
+
+			Fatality:CreateAnimation(AutoLoadIndicator,0.3,{
+				BackgroundTransparency = 1
+			})
 		end;
 	end;
 
 	ElementToggle(false);
 
+	-- UI Setup (same as before)
 	ConfigWindowFrame.Name = "ConfigWindowFrame"
 	ConfigWindowFrame.Parent = Root
 	ConfigWindowFrame.AnchorPoint = Vector2.new(0,1)
@@ -3729,7 +3751,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ScrollingFrame.BorderSizePixel = 0
 	ScrollingFrame.Position = UDim2.new(0, 8, 0, 8)
-	ScrollingFrame.Size = UDim2.new(1, -40, 1, -45)
+	ScrollingFrame.Size = UDim2.new(1, -40, 1, -70)
 	ScrollingFrame.ZIndex = 207
 	ScrollingFrame.ScrollBarThickness = 0
 
@@ -3758,7 +3780,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	InputFrame.BackgroundColor3 = Fatality.Colors.Black
 	InputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	InputFrame.BorderSizePixel = 0
-	InputFrame.Position = UDim2.new(0, 8, 1, -9)
+	InputFrame.Position = UDim2.new(0, 8, 1, -34)
 	InputFrame.Size = UDim2.new(1, -40, 0, 22)
 	InputFrame.ZIndex = 208
 
@@ -3840,7 +3862,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	DeleteButton.BackgroundTransparency = 1.000
 	DeleteButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	DeleteButton.BorderSizePixel = 0
-	DeleteButton.Position = UDim2.new(1, -8, 0, 55)
+	DeleteButton.Position = UDim2.new(1, -8, 0, 46)
 	DeleteButton.Size = UDim2.new(0, 15, 0, 15)
 	DeleteButton.ZIndex = 209
 	DeleteButton.Image = "rbxassetid://10747362393"
@@ -3850,10 +3872,45 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 	UICorner_7.CornerRadius = UDim.new(1, 0)
 	UICorner_7.Parent = DeleteButton
 
+	-- AutoLoad Button
+	AutoLoadButton.Name = "AutoLoadButton"
+	AutoLoadButton.Parent = ConfigWindowFrame
+	AutoLoadButton.AnchorPoint = Vector2.new(1, 0)
+	AutoLoadButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	AutoLoadButton.BackgroundTransparency = 1.000
+	AutoLoadButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	AutoLoadButton.BorderSizePixel = 0
+	AutoLoadButton.Position = UDim2.new(1, -8, 0, 64)
+	AutoLoadButton.Size = UDim2.new(0, 15, 0, 15)
+	AutoLoadButton.ZIndex = 209
+	AutoLoadButton.Image = "rbxassetid://10723415903"
+	AutoLoadButton.ImageColor3 = Color3.fromRGB(100, 200, 255)
+	AutoLoadButton.ImageTransparency = 0.500
+
+	UICorner_8.CornerRadius = UDim.new(1, 0)
+	UICorner_8.Parent = AutoLoadButton
+
+	-- AutoLoad Status Indicator
+	AutoLoadIndicator.Name = "AutoLoadIndicator"
+	AutoLoadIndicator.Parent = ConfigWindowFrame
+	AutoLoadIndicator.AnchorPoint = Vector2.new(0, 1)
+	AutoLoadIndicator.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+	AutoLoadIndicator.BackgroundTransparency = 0.8
+	AutoLoadIndicator.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	AutoLoadIndicator.BorderSizePixel = 0
+	AutoLoadIndicator.Position = UDim2.new(0, 8, 1, -9)
+	AutoLoadIndicator.Size = UDim2.new(1, -40, 0, 3)
+	AutoLoadIndicator.ZIndex = 208
+	AutoLoadIndicator.Visible = false
+
+	UICorner_9.CornerRadius = UDim.new(0, 2)
+	UICorner_9.Parent = AutoLoadIndicator
+
 	Button.MouseButton1Click:Connect(function()
 		ElementToggle(true);
 	end);
 
+	-- Hover effects
 	Fatality:CreateHover(DeleteButton,function(bool)
 		if bool then
 			Fatality:CreateAnimation(DeleteButton,0.3,{
@@ -3902,6 +3959,18 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		end;
 	end);
 
+	Fatality:CreateHover(AutoLoadButton,function(bool)
+		if bool then
+			Fatality:CreateAnimation(AutoLoadButton,0.3,{
+				ImageTransparency = 0.15;
+			})
+		else
+			Fatality:CreateAnimation(AutoLoadButton,0.3,{
+				ImageTransparency = 0.500;
+			})
+		end;
+	end);
+
 	game:GetService('UserInputService').InputBegan:Connect(function(Input,Typing)
 		if Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1 then
 			if UIToggle and not Fatality:IsMouseOverFrame(ConfigWindowFrame) then
@@ -3934,6 +4003,10 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		Element = nil;
 	};
 
+	-- AutoLoad variables
+	local autoLoadEnabled = false;
+	local autoLoadConfig = nil;
+
 	local res;
 	res = Fatality:CreateResponse({
 		SetFiles = function(configs,bypass)
@@ -3954,24 +4027,46 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 			for i,v in next, Configs do
 				local button = new_button();
 				button.Parent = ScrollingFrame;
-				button.Text = " "..tostring(v);
+				
+				-- Show autoload indicator
+				if autoLoadEnabled and autoLoadConfig == v then
+					button.Text = "🔄 "..tostring(v);
+					button.TextColor3 = Color3.fromRGB(100, 200, 255);
+				else
+					button.Text = " "..tostring(v);
+					button.TextColor3 = Color3.fromRGB(150, 150, 150);
+				end;
 
 				if tostring(import.Name) == tostring(v) or import.Name == v then
 					import.Element = button;
 					import.Name = v;
-					import.Element.TextColor3 = Fatality.Colors.Main;
-					button.Text = "  "..tostring(v);
+					if not (autoLoadEnabled and autoLoadConfig == v) then
+						import.Element.TextColor3 = Fatality.Colors.Main;
+						button.Text = "  "..tostring(v);
+					end;
 				end;
 
 				button.MouseButton1Click:Connect(function()
 					if import.Element then
-						import.Element.TextColor3 = Color3.fromRGB(150, 150, 150);
-						import.Element.Text = " "..import.Name;
+						if autoLoadEnabled and autoLoadConfig == import.Name then
+							import.Element.Text = "🔄 "..import.Name;
+							import.Element.TextColor3 = Color3.fromRGB(100, 200, 255);
+						else
+							import.Element.TextColor3 = Color3.fromRGB(150, 150, 150);
+							import.Element.Text = " "..import.Name;
+						end;
 					end;
+					
 					import.Element = button;
 					import.Name = v;
-					button.TextColor3 = Fatality.Colors.Main;
-					button.Text = "  "..tostring(v);
+					
+					if autoLoadEnabled and autoLoadConfig == v then
+						button.TextColor3 = Color3.fromRGB(100, 200, 255);
+						button.Text = "🔄 "..tostring(v);
+					else
+						button.TextColor3 = Fatality.Colors.Main;
+						button.Text = "  "..tostring(v);
+					end;
 				end);
 			end;
 		end,
@@ -3989,8 +4084,8 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				for i,v in next , allFiles do
 					local spl = (string.find(v,'/',1,true) and string.split(v,'/')) or (string.find(v,'\\',1,true) and string.split(v,'\\'));
 					local name = spl[#spl];
-					-- Fixed: Only add files with valid extensions
-					if string.find(name, "%.") then
+					-- Only show .json files in the list
+					if string.find(name, "%.json$") then
 						table.insert(fileList, name);
 					end;
 				end;
@@ -4008,7 +4103,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 		DeleteConfig = function(name)
 			if not res.ConfigDirectory then
 				warn("Config directory not found");
-				return;
+				return false;
 			end;
 
 			local path = res.ConfigDirectory..'/'..tostring(name);
@@ -4020,19 +4115,24 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				return false;
 			end);
 
-			if not success then
+			if success then
+				-- Clear autoload if deleted config was autoload
+				if autoLoadEnabled and autoLoadConfig == name then
+					res:SetAutoLoad(nil);
+				end;
+				return true;
+			else
 				warn("Failed to delete config: " .. tostring(err));
+				return false;
 			end;
 		end,
 
 		SaveConfig = function(name, content)
-			-- Fixed: Better input validation
 			if not name or name == "" then
 				warn("Config name cannot be empty");
 				return false;
 			end;
 
-			-- Fixed: Sanitize filename
 			local sanitizedName = string.gsub(name, "[/\\:*?\"<>|]", "");
 			if sanitizedName ~= name then
 				warn("Config name contains invalid characters, using: " .. sanitizedName);
@@ -4046,7 +4146,6 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 
 			local path = res.ConfigDirectory..'/'..tostring(name);
 			
-			-- Fixed: Add file extension if not present
 			if not string.find(path, "%.json$") then
 				path = path .. ".json";
 			end;
@@ -4072,7 +4171,6 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 
 			local path = res.ConfigDirectory..'/'..tostring(name);
 			
-			-- Fixed: Try with .json extension if file doesn't exist
 			if not isfile(path) and not string.find(path, "%.json$") then
 				path = path .. ".json";
 			end;
@@ -4108,8 +4206,118 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 			end;
 		end,
 
+		-- FIXED: AutoLoad functions
+		SetAutoLoad = function(configName)
+			if configName then
+				autoLoadEnabled = true;
+				autoLoadConfig = configName;
+				AutoLoadIndicator.Visible = true;
+				
+				-- Save autoload setting to hidden system folder
+				local success, err = pcall(function()
+					-- Create hidden system folder
+					local systemPath = res.ConfigDirectory.."/.system";
+					if not isfolder(systemPath) then
+						makefolder(systemPath);
+					end;
+					
+					-- Save autoload config as JSON in hidden folder
+					local autoLoadData = {
+						enabled = true,
+						config = configName,
+						timestamp = os.time()
+					};
+					
+					local autoLoadPath = systemPath.."/autoload.json";
+					local jsonData = game:GetService('HttpService'):JSONEncode(autoLoadData);
+					writefile(autoLoadPath, jsonData);
+				end);
+				
+				if success then
+					Fatal.Notifier:Notify({
+						Title = "AutoLoad",
+						Content = "AutoLoad set to: " .. configName,
+						Icon = "refresh-cw",
+						Duration = 3,
+					});
+				else
+					warn("Failed to save autoload setting: " .. tostring(err));
+				end;
+			else
+				autoLoadEnabled = false;
+				autoLoadConfig = nil;
+				AutoLoadIndicator.Visible = false;
+				
+				-- Remove autoload setting
+				pcall(function()
+					local systemPath = res.ConfigDirectory.."/.system";
+					local autoLoadPath = systemPath.."/autoload.json";
+					if isfile(autoLoadPath) then
+						delfile(autoLoadPath);
+					end;
+				end);
+				
+				Fatal.Notifier:Notify({
+					Title = "AutoLoad",
+					Content = "AutoLoad disabled",
+					Icon = "x-circle",
+					Duration = 3,
+				});
+			end;
+			
+			res:Refresh();
+		end,
+
+		GetAutoLoad = function()
+			return autoLoadEnabled and autoLoadConfig or nil;
+		end,
+
+		LoadAutoLoadSetting = function()
+			if not res.ConfigDirectory then return; end;
+			
+			local success, result = pcall(function()
+				local systemPath = res.ConfigDirectory.."/.system";
+				local autoLoadPath = systemPath.."/autoload.json";
+				
+				if isfile(autoLoadPath) then
+					local content = readfile(autoLoadPath);
+					local data = game:GetService('HttpService'):JSONDecode(content);
+					
+					if data.enabled and data.config then
+						-- Check if config still exists
+						local configPath = res.ConfigDirectory..'/'..data.config;
+						if not string.find(configPath, "%.json$") then
+							configPath = configPath .. ".json";
+						end;
+						
+						if isfile(configPath) then
+							autoLoadEnabled = true;
+							autoLoadConfig = data.config;
+							AutoLoadIndicator.Visible = true;
+							
+							-- Auto load the config after a small delay
+							task.spawn(function()
+								task.wait(1);
+								res:LoadConfig(data.config);
+							end);
+							
+							return true;
+						else
+							-- Config doesn't exist anymore, clear autoload
+							res:SetAutoLoad(nil);
+							return false;
+						end;
+					end;
+				end;
+				return false;
+			end);
+			
+			if not success then
+				warn("Failed to load autoload setting: " .. tostring(result));
+			end;
+		end,
+
 		Init = function(Name: string, Folder: string)
-			-- Fixed: Better error handling for folder creation
 			local success, err = pcall(function()
 				if not isfolder(Folder or "Fatality") then
 					makefolder(Folder or "Fatality");	
@@ -4133,7 +4341,7 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				return;
 			end;
 
-			-- Fixed: Better event handling with error checking
+			-- Button event handlers
 			AddConfigButton.MouseButton1Click:Connect(function()
 				local configName = TextBox.Text;
 
@@ -4250,7 +4458,6 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 							Duration = 4,
 						});
 						res:ReloadConfig();
-						-- Reset selection
 						import.Name = nil;
 						import.Element = nil;
 					else
@@ -4271,8 +4478,29 @@ function Fatality:CreateConfigWindow(Root: ScreenGui , Fatal , Button: ImageButt
 				end;
 			end);
 
-			-- Load existing configs on initialization
+			-- AutoLoad Button Click Handler
+			AutoLoadButton.MouseButton1Click:Connect(function()
+				if import and import.Name then
+					if autoLoadEnabled and autoLoadConfig == import.Name then
+						-- Disable autoload
+						res:SetAutoLoad(nil);
+					else
+						-- Enable autoload for selected config
+						res:SetAutoLoad(import.Name);
+					end;
+				else
+					Fatal.Notifier:Notify({
+						Title = "AutoLoad Error",
+						Content = "Please select a config for AutoLoad",
+						Icon = "alert-circle",
+						Duration = 3,
+					});
+				end;
+			end);
+
+			-- Load existing configs and autoload setting
 			res:ReloadConfig();
+			res:LoadAutoLoadSetting();
 		end,
 	});
 
