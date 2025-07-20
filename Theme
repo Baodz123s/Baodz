@@ -1,5 +1,5 @@
 --[[
-    Fatality ThemeManager
+    Fatality ThemeManager - Fixed Version
     Compatible with Fatality UI Library
     
     Usage:
@@ -8,609 +8,580 @@
     ThemeManager:ApplyToTab(Menu["UI Settings"])
 --]]
 
+-- Services and compatibility
 local cloneref = cloneref or function(instance) return instance end
 local httpService = cloneref(game:GetService("HttpService"))
-local httprequest = (syn and syn.request) or request or http_request or (http and http.request)
 
--- File system compatibility
-local isfolder, isfile, listfiles, makefolder, writefile, readfile, delfile = 
-    isfolder, isfile, listfiles, makefolder, writefile, readfile, delfile
+-- File system functions with error handling
+local function safeCall(func, ...)
+    local success, result = pcall(func, ...)
+    return success and result or nil
+end
 
+local isfolder = isfolder or function() return false end
+local isfile = isfile or function() return false end
+local listfiles = listfiles or function() return {} end
+local makefolder = makefolder or function() end
+local writefile = writefile or function() end
+local readfile = readfile or function() return "" end
+local delfile = delfile or function() end
+
+-- Enhanced file system compatibility
 if typeof(copyfunction) == "function" then
-    local isfolder_copy, isfile_copy, listfiles_copy =
-        copyfunction(isfolder), copyfunction(isfile), copyfunction(listfiles)
+    local isfolder_copy = copyfunction(isfolder)
+    local isfile_copy = copyfunction(isfile)
+    local listfiles_copy = copyfunction(listfiles)
 
-    local isfolder_success, isfolder_error = pcall(function()
-        return isfolder_copy("test" .. tostring(math.random(1000000, 9999999)))
-    end)
+    isfolder = function(folder)
+        return safeCall(isfolder_copy, folder) or false
+    end
 
-    if isfolder_success == false or typeof(isfolder_error) ~= "boolean" then
-        isfolder = function(folder)
-            local success, data = pcall(isfolder_copy, folder)
-            return (success and data) or false
-        end
+    isfile = function(file)
+        return safeCall(isfile_copy, file) or false
+    end
 
-        isfile = function(file)
-            local success, data = pcall(isfile_copy, file)
-            return (success and data) or false
-        end
-
-        listfiles = function(folder)
-            local success, data = pcall(listfiles_copy, folder)
-            return (success and data) or {}
-        end
+    listfiles = function(folder)
+        return safeCall(listfiles_copy, folder) or {}
     end
 end
 
 local FatalityThemeManager = {}
-do
-    FatalityThemeManager.Folder = "FatalityThemes"
-    FatalityThemeManager.Library = nil
-    FatalityThemeManager.AppliedToTab = false
-    
-    -- Built-in themes compatible with Fatality color scheme
-    FatalityThemeManager.BuiltInThemes = {
-        ["Default"] = {
-            1,
-            {
-                ["Main"] = "7d55ff",
-                ["Black"] = "0f0f0f", 
-                ["White"] = "ffffff",
-                ["Dark"] = "191919",
-                ["Red"] = "ff4757"
-            }
-        },
-        ["Fatality Dark"] = {
-            2,
-            {
-                ["Main"] = "c50754",
-                ["Black"] = "191335",
-                ["White"] = "ffffff", 
-                ["Dark"] = "1e1842",
-                ["Red"] = "ff4757"
-            }
-        },
-        ["Cyber Blue"] = {
-            3,
-            {
-                ["Main"] = "00d4ff",
-                ["Black"] = "0a0a0a",
-                ["White"] = "ffffff",
-                ["Dark"] = "1a1a1a", 
-                ["Red"] = "ff073a"
-            }
-        },
-        ["Neon Green"] = {
-            4,
-            {
-                ["Main"] = "39ff14",
-                ["Black"] = "0d0d0d",
-                ["White"] = "ffffff",
-                ["Dark"] = "1d1d1d",
-                ["Red"] = "ff1744"
-            }
-        },
-        ["Purple Haze"] = {
-            5,
-            {
-                ["Main"] = "9c27b0",
-                ["Black"] = "1a0e2e",
-                ["White"] = "ffffff",
-                ["Dark"] = "2d1b3d",
-                ["Red"] = "e91e63"
-            }
-        },
-        ["Ocean"] = {
-            6,
-            {
-                ["Main"] = "0077be",
-                ["Black"] = "0f1419",
-                ["White"] = "ffffff",
-                ["Dark"] = "1e2328",
-                ["Red"] = "f07178"
-            }
-        },
-        ["Sunset"] = {
-            7,
-            {
-                ["Main"] = "ff6b35",
-                ["Black"] = "1a1a1a",
-                ["White"] = "ffffff",
-                ["Dark"] = "2d2d2d",
-                ["Red"] = "ff4757"
-            }
-        },
-        ["Mint"] = {
-            8,
-            {
-                ["Main"] = "3db488",
-                ["Black"] = "1c1c1c",
-                ["White"] = "ffffff",
-                ["Dark"] = "242424",
-                ["Red"] = "e74c3c"
-            }
-        },
-        ["Rose Gold"] = {
-            9,
-            {
-                ["Main"] = "e91e63",
-                ["Black"] = "1a1a1a",
-                ["White"] = "ffffff",
-                ["Dark"] = "2d2d2d",
-                ["Red"] = "f44336"
-            }
-        },
-        ["Matrix"] = {
-            10,
-            {
-                ["Main"] = "00ff41",
-                ["Black"] = "000000",
-                ["White"] = "00ff41",
-                ["Dark"] = "0d1b0d",
-                ["Red"] = "ff0000"
-            }
+
+-- Configuration
+FatalityThemeManager.Folder = "FatalityThemes"
+FatalityThemeManager.Library = nil
+FatalityThemeManager.AppliedToTab = false
+
+-- Built-in themes with Fatality color scheme
+FatalityThemeManager.BuiltInThemes = {
+    ["Default"] = {
+        order = 1,
+        colors = {
+            Main = "7d55ff",
+            Black = "0f0f0f", 
+            White = "ffffff",
+            Dark = "191919",
+            Red = "ff4757"
+        }
+    },
+    ["Fatality Dark"] = {
+        order = 2,
+        colors = {
+            Main = "c50754",
+            Black = "191335",
+            White = "ffffff", 
+            Dark = "1e1842",
+            Red = "ff4757"
+        }
+    },
+    ["Cyber Blue"] = {
+        order = 3,
+        colors = {
+            Main = "00d4ff",
+            Black = "0a0a0a",
+            White = "ffffff",
+            Dark = "1a1a1a", 
+            Red = "ff073a"
+        }
+    },
+    ["Neon Green"] = {
+        order = 4,
+        colors = {
+            Main = "39ff14",
+            Black = "0d0d0d",
+            White = "ffffff",
+            Dark = "1d1d1d",
+            Red = "ff1744"
+        }
+    },
+    ["Purple Haze"] = {
+        order = 5,
+        colors = {
+            Main = "9c27b0",
+            Black = "1a0e2e",
+            White = "ffffff",
+            Dark = "2d1b3d",
+            Red = "e91e63"
+        }
+    },
+    ["Ocean"] = {
+        order = 6,
+        colors = {
+            Main = "0077be",
+            Black = "0f1419",
+            White = "ffffff",
+            Dark = "1e2328",
+            Red = "f07178"
+        }
+    },
+    ["Sunset"] = {
+        order = 7,
+        colors = {
+            Main = "ff6b35",
+            Black = "1a1a1a",
+            White = "ffffff",
+            Dark = "2d2d2d",
+            Red = "ff4757"
+        }
+    },
+    ["Mint"] = {
+        order = 8,
+        colors = {
+            Main = "3db488",
+            Black = "1c1c1c",
+            White = "ffffff",
+            Dark = "242424",
+            Red = "e74c3c"
+        }
+    },
+    ["Rose Gold"] = {
+        order = 9,
+        colors = {
+            Main = "e91e63",
+            Black = "1a1a1a",
+            White = "ffffff",
+            Dark = "2d2d2d",
+            Red = "f44336"
+        }
+    },
+    ["Matrix"] = {
+        order = 10,
+        colors = {
+            Main = "00ff41",
+            Black = "000000",
+            White = "00ff41",
+            Dark = "0d1b0d",
+            Red = "ff0000"
         }
     }
+}
 
-    function FatalityThemeManager:SetLibrary(library)
-        self.Library = library
-    end
+-- Core functions
+function FatalityThemeManager:SetLibrary(library)
+    self.Library = library
+    print("[ThemeManager] Library set successfully")
+end
 
-    -- Folder management
-    function FatalityThemeManager:GetPaths()
-        local paths = {}
-        local parts = self.Folder:split("/")
-        
-        for idx = 1, #parts do
-            paths[#paths + 1] = table.concat(parts, "/", 1, idx)
-        end
-        
-        paths[#paths + 1] = self.Folder .. "/themes"
-        return paths
-    end
-
-    function FatalityThemeManager:BuildFolderTree()
-        local paths = self:GetPaths()
-        
-        for i = 1, #paths do
-            local str = paths[i]
-            if not isfolder(str) then
-                makefolder(str)
-            end
-        end
-    end
-
-    function FatalityThemeManager:CheckFolderTree()
+function FatalityThemeManager:BuildFolderTree()
+    local success = pcall(function()
         if not isfolder(self.Folder) then
-            self:BuildFolderTree()
-            task.wait(0.1)
+            makefolder(self.Folder)
         end
-    end
-
-    function FatalityThemeManager:SetFolder(folder)
-        self.Folder = folder
-        self:BuildFolderTree()
-    end
-
-    -- Theme application
-    function FatalityThemeManager:ApplyTheme(theme)
-        local customThemeData = self:GetCustomTheme(theme)
-        local data = customThemeData or self.BuiltInThemes[theme]
-
-        if not data then
-            return
-        end
-
-        local scheme = data[2]
         
-        -- Apply colors to Fatality library
-        for colorName, hexValue in pairs(scheme) do
-            if self.Library.Colors[colorName] then
-                self.Library.Colors[colorName] = Color3.fromHex(hexValue)
+        local themesFolder = self.Folder .. "/themes"
+        if not isfolder(themesFolder) then
+            makefolder(themesFolder)
+        end
+    end)
+    
+    if success then
+        print("[ThemeManager] Folder structure created")
+    else
+        warn("[ThemeManager] Failed to create folder structure")
+    end
+end
+
+function FatalityThemeManager:ApplyTheme(themeName)
+    if not self.Library then
+        warn("[ThemeManager] Library not set!")
+        return
+    end
+
+    local themeData = self.BuiltInThemes[themeName] or self:GetCustomTheme(themeName)
+    
+    if not themeData then
+        warn("[ThemeManager] Theme not found: " .. tostring(themeName))
+        return
+    end
+
+    local colors = themeData.colors or themeData
+    
+    -- Apply colors to Fatality library
+    for colorName, hexValue in pairs(colors) do
+        if self.Library.Colors and self.Library.Colors[colorName] then
+            local success, color = pcall(Color3.fromHex, hexValue)
+            if success then
+                self.Library.Colors[colorName] = color
             end
         end
+    end
 
-        -- Update all UI elements
-        self:ThemeUpdate()
-        
-        -- Notify user
-        if self.Library.Notifier then
+    -- Update UI
+    self:UpdateUI()
+    
+    -- Notify user
+    self:Notify("Applied theme: " .. themeName, "palette")
+    print("[ThemeManager] Applied theme: " .. themeName)
+end
+
+function FatalityThemeManager:UpdateUI()
+    if self.Library and self.Library.UpdateColorsUsingRegistry then
+        pcall(self.Library.UpdateColorsUsingRegistry, self.Library)
+    elseif self.Library and self.Library.UpdateColors then
+        pcall(self.Library.UpdateColors, self.Library)
+    end
+end
+
+function FatalityThemeManager:Notify(message, icon)
+    if self.Library and self.Library.Notifier then
+        pcall(function()
             self.Library.Notifier:Notify({
                 Title = "Theme Manager",
-                Content = "Applied theme: " .. theme,
-                Icon = "palette",
+                Content = message,
+                Icon = icon or "info",
                 Duration = 3,
             })
-        end
-    end
-
-    function FatalityThemeManager:ThemeUpdate()
-        -- Update colors using Fatality's color system
-        if self.Library.UpdateColorsUsingRegistry then
-            self.Library:UpdateColorsUsingRegistry()
-        elseif self.Library.UpdateColors then
-            self.Library:UpdateColors()
-        end
-    end
-
-    -- Custom theme management
-    function FatalityThemeManager:GetCustomTheme(file)
-        local path = self.Folder .. "/themes/" .. file .. ".json"
-        if not isfile(path) then
-            return nil
-        end
-
-        local data = readfile(path)
-        local success, decoded = pcall(httpService.JSONDecode, httpService, data)
-
-        if not success then
-            return nil
-        end
-
-        return { 1, decoded }
-    end
-
-    function FatalityThemeManager:SaveCustomTheme(name)
-        if name:gsub(" ", "") == "" then
-            if self.Library.Notifier then
-                self.Library.Notifier:Notify({
-                    Title = "Theme Manager",
-                    Content = "Invalid theme name (empty)",
-                    Icon = "alert-circle",
-                    Duration = 3,
-                })
-            end
-            return
-        end
-
-        local theme = {}
-        
-        -- Get current colors from library
-        for colorName, color in pairs(self.Library.Colors) do
-            if typeof(color) == "Color3" then
-                theme[colorName] = color:ToHex()
-            end
-        end
-
-        local success, err = pcall(function()
-            writefile(self.Folder .. "/themes/" .. name .. ".json", httpService:JSONEncode(theme))
         end)
+    end
+end
 
-        if success then
-            if self.Library.Notifier then
-                self.Library.Notifier:Notify({
-                    Title = "Theme Manager",
-                    Content = "Saved theme: " .. name,
-                    Icon = "save",
-                    Duration = 3,
-                })
-            end
-        else
-            if self.Library.Notifier then
-                self.Library.Notifier:Notify({
-                    Title = "Theme Manager",
-                    Content = "Failed to save theme: " .. tostring(err),
-                    Icon = "alert-circle",
-                    Duration = 4,
-                })
-            end
+function FatalityThemeManager:GetCustomTheme(name)
+    local path = self.Folder .. "/themes/" .. name .. ".json"
+    
+    if not isfile(path) then
+        return nil
+    end
+
+    local success, data = pcall(readfile, path)
+    if not success then
+        return nil
+    end
+
+    local success2, decoded = pcall(httpService.JSONDecode, httpService, data)
+    if not success2 then
+        return nil
+    end
+
+    return { colors = decoded }
+end
+
+function FatalityThemeManager:SaveCustomTheme(name)
+    if not name or name:gsub(" ", "") == "" then
+        self:Notify("Invalid theme name (empty)", "alert-circle")
+        return false
+    end
+
+    if not self.Library or not self.Library.Colors then
+        self:Notify("Library not properly initialized", "alert-circle")
+        return false
+    end
+
+    local theme = {}
+    
+    -- Get current colors from library
+    for colorName, color in pairs(self.Library.Colors) do
+        if typeof(color) == "Color3" then
+            theme[colorName] = color:ToHex()
         end
     end
 
-    function FatalityThemeManager:DeleteTheme(name)
-        if not name then
-            return false, "No theme selected"
-        end
+    local path = self.Folder .. "/themes/" .. name .. ".json"
+    local success = pcall(function()
+        local jsonData = httpService:JSONEncode(theme)
+        writefile(path, jsonData)
+    end)
 
-        local file = self.Folder .. "/themes/" .. name .. ".json"
-        if not isfile(file) then
-            return false, "Theme file not found"
-        end
-
-        local success, err = pcall(delfile, file)
-        if not success then
-            return false, "Delete file error: " .. tostring(err)
-        end
-
+    if success then
+        self:Notify("Saved theme: " .. name, "save")
         return true
+    else
+        self:Notify("Failed to save theme", "alert-circle")
+        return false
+    end
+end
+
+function FatalityThemeManager:DeleteTheme(name)
+    if not name then
+        return false, "No theme selected"
     end
 
-    function FatalityThemeManager:LoadDefault()
-        local theme = "Default"
-        local defaultFile = self.Folder .. "/themes/default.txt"
-        
-        if isfile(defaultFile) then
-            local content = readfile(defaultFile)
+    local path = self.Folder .. "/themes/" .. name .. ".json"
+    if not isfile(path) then
+        return false, "Theme file not found"
+    end
+
+    local success = pcall(delfile, path)
+    return success, success and "Success" or "Delete failed"
+end
+
+function FatalityThemeManager:GetCustomThemeList()
+    local themes = {}
+    local success, files = pcall(listfiles, self.Folder .. "/themes")
+    
+    if not success then
+        return themes
+    end
+
+    for _, file in pairs(files) do
+        if file:sub(-5) == ".json" then
+            local name = file:match("([^/\\]+)%.json$")
+            if name then
+                table.insert(themes, name)
+            end
+        end
+    end
+
+    return themes
+end
+
+function FatalityThemeManager:LoadDefault()
+    local defaultPath = self.Folder .. "/themes/default.txt"
+    local themeName = "Default"
+    
+    if isfile(defaultPath) then
+        local success, content = pcall(readfile, defaultPath)
+        if success and content and content ~= "" then
             if self.BuiltInThemes[content] or self:GetCustomTheme(content) then
-                theme = content
+                themeName = content
             end
         end
-
-        self:ApplyTheme(theme)
-        return theme
     end
 
-    function FatalityThemeManager:SaveDefault(theme)
-        writefile(self.Folder .. "/themes/default.txt", theme)
+    self:ApplyTheme(themeName)
+    return themeName
+end
+
+function FatalityThemeManager:SaveDefault(themeName)
+    local path = self.Folder .. "/themes/default.txt"
+    local success = pcall(writefile, path, themeName)
+    
+    if success then
+        self:Notify("Set default theme to: " .. themeName, "check")
+    else
+        self:Notify("Failed to save default theme", "alert-circle")
+    end
+    
+    return success
+end
+
+-- UI Creation
+function FatalityThemeManager:CreateThemeManager(section)
+    if not section then
+        warn("[ThemeManager] Section is nil!")
+        return
     end
 
-    function FatalityThemeManager:ReloadCustomThemes()
-        local list = listfiles(self.Folder .. "/themes")
-        local out = {}
+    -- Color pickers for each Fatality color
+    local colorPickers = {}
+    
+    local colorNames = {
+        {name = "Main", display = "Main Color"},
+        {name = "Black", display = "Background Color"},
+        {name = "White", display = "Text Color"},
+        {name = "Dark", display = "Dark Color"},
+        {name = "Red", display = "Red Color"}
+    }
+
+    for _, colorInfo in pairs(colorNames) do
+        local defaultColor = (self.Library.Colors and self.Library.Colors[colorInfo.name]) or Color3.new(1, 1, 1)
         
-        for i = 1, #list do
-            local file = list[i]
-            if file:sub(-5) == ".json" then
-                local pos = file:find(".json", 1, true)
-                local start = pos
-
-                local char = file:sub(pos, pos)
-                while char ~= "/" and char ~= "\\" and char ~= "" do
-                    pos = pos - 1
-                    char = file:sub(pos, pos)
-                end
-
-                if char == "/" or char == "\\" then
-                    table.insert(out, file:sub(pos + 1, start - 1))
+        colorPickers[colorInfo.name] = section:AddColorPicker({
+            Name = colorInfo.display,
+            Default = defaultColor,
+            Flag = "ThemeManager_" .. colorInfo.name,
+            Callback = function(color)
+                if self.Library.Colors then
+                    self.Library.Colors[colorInfo.name] = color
+                    self:UpdateUI()
                 end
             end
-        end
-
-        return out
+        })
     end
 
-    -- UI Creation for Fatality
-    function FatalityThemeManager:CreateThemeManager(section)
-        -- Color pickers for each Fatality color
-        local MainColorPicker = section:AddColorPicker({
-            Name = "Main Color",
-            Default = self.Library.Colors.Main,
-            Flag = "ThemeManager_MainColor",
-            Callback = function(color)
-                self.Library.Colors.Main = color
-                self:ThemeUpdate()
-            end
-        })
+    -- Built-in themes dropdown
+    local builtinThemes = {}
+    for name, data in pairs(self.BuiltInThemes) do
+        table.insert(builtinThemes, name)
+    end
+    
+    table.sort(builtinThemes, function(a, b)
+        return (self.BuiltInThemes[a].order or 999) < (self.BuiltInThemes[b].order or 999)
+    end)
 
-        local BlackColorPicker = section:AddColorPicker({
-            Name = "Background Color", 
-            Default = self.Library.Colors.Black,
-            Flag = "ThemeManager_BlackColor",
-            Callback = function(color)
-                self.Library.Colors.Black = color
-                self:ThemeUpdate()
-            end
-        })
-
-        local WhiteColorPicker = section:AddColorPicker({
-            Name = "Text Color",
-            Default = self.Library.Colors.White,
-            Flag = "ThemeManager_WhiteColor", 
-            Callback = function(color)
-                self.Library.Colors.White = color
-                self:ThemeUpdate()
-            end
-        })
-
-        local DarkColorPicker = section:AddColorPicker({
-            Name = "Dark Color",
-            Default = self.Library.Colors.Dark,
-            Flag = "ThemeManager_DarkColor",
-            Callback = function(color)
-                self.Library.Colors.Dark = color
-                self:ThemeUpdate()
-            end
-        })
-
-        local RedColorPicker = section:AddColorPicker({
-            Name = "Red Color",
-            Default = self.Library.Colors.Red,
-            Flag = "ThemeManager_RedColor",
-            Callback = function(color)
-                self.Library.Colors.Red = color
-                self:ThemeUpdate()
-            end
-        })
-
-        -- Built-in themes
-        local ThemesArray = {}
-        for name, theme in pairs(self.BuiltInThemes) do
-            table.insert(ThemesArray, name)
-        end
-
-        table.sort(ThemesArray, function(a, b)
-            return self.BuiltInThemes[a][1] < self.BuiltInThemes[b][1]
-        end)
-
-        local ThemeDropdown = section:AddDropdown({
-            Name = "Built-in Themes",
-            Options = ThemesArray,
-            Default = "Default",
-            Flag = "ThemeManager_BuiltinTheme",
-            Callback = function(theme)
+    local themeDropdown = section:AddDropdown({
+        Name = "Built-in Themes",
+        Options = builtinThemes,
+        Default = builtinThemes[1] or "Default",
+        Flag = "ThemeManager_BuiltinTheme",
+        Callback = function(theme)
+            if theme then
                 self:ApplyTheme(theme)
             end
-        })
+        end
+    })
 
-        local SetDefaultButton = section:AddButton({
-            Name = "Set as Default",
-            Callback = function()
-                local currentTheme = ThemeDropdown.Value
+    section:AddButton({
+        Name = "Set as Default",
+        Callback = function()
+            local currentTheme = themeDropdown.Value
+            if currentTheme then
                 self:SaveDefault(currentTheme)
-                
-                if self.Library.Notifier then
-                    self.Library.Notifier:Notify({
-                        Title = "Theme Manager",
-                        Content = "Set default theme to: " .. currentTheme,
-                        Icon = "check",
-                        Duration = 3,
-                    })
-                end
             end
-        })
+        end
+    })
 
-        -- Custom themes
-        local CustomThemeInput = section:AddTextbox({
-            Name = "Custom Theme Name",
-            Default = "",
-            TextDisappear = true,
-            Flag = "ThemeManager_CustomName",
-            Callback = function() end
-        })
+    -- Custom theme management
+    local customThemeInput = section:AddTextbox({
+        Name = "Custom Theme Name",
+        Default = "",
+        TextDisappear = true,
+        Flag = "ThemeManager_CustomName",
+        Callback = function() end
+    })
 
-        local SaveThemeButton = section:AddButton({
-            Name = "Save Current Theme",
-            Callback = function()
-                local name = CustomThemeInput.Value
-                if name and name ~= "" then
-                    self:SaveCustomTheme(name)
-                    CustomThemeDropdown:Refresh(self:ReloadCustomThemes())
+    section:AddButton({
+        Name = "Save Current Theme",
+        Callback = function()
+            local name = customThemeInput.Value
+            if name and name ~= "" then
+                if self:SaveCustomTheme(name) then
+                    customThemeDropdown:Refresh(self:GetCustomThemeList())
                 end
+            else
+                self:Notify("Please enter a theme name", "alert-circle")
             end
-        })
+        end
+    })
 
-        local CustomThemeDropdown = section:AddDropdown({
-            Name = "Custom Themes", 
-            Options = self:ReloadCustomThemes(),
-            Flag = "ThemeManager_CustomTheme",
-            Callback = function(theme)
-                if theme then
-                    self:ApplyTheme(theme)
+    local customThemeDropdown = section:AddDropdown({
+        Name = "Custom Themes",
+        Options = self:GetCustomThemeList(),
+        Flag = "ThemeManager_CustomTheme",
+        Callback = function(theme)
+            if theme then
+                self:ApplyTheme(theme)
+            end
+        end
+    })
+
+    section:AddButton({
+        Name = "Load Custom Theme",
+        Callback = function()
+            local theme = customThemeDropdown.Value
+            if theme then
+                self:ApplyTheme(theme)
+            else
+                self:Notify("Please select a custom theme", "alert-circle")
+            end
+        end
+    })
+
+    section:AddButton({
+        Name = "Overwrite Theme",
+        Callback = function()
+            local theme = customThemeDropdown.Value
+            if theme then
+                if self:SaveCustomTheme(theme) then
+                    self:Notify("Overwrote theme: " .. theme, "edit")
                 end
+            else
+                self:Notify("Please select a theme to overwrite", "alert-circle")
             end
-        })
+        end
+    })
 
-        local LoadCustomButton = section:AddButton({
-            Name = "Load Custom Theme",
-            Callback = function()
-                local theme = CustomThemeDropdown.Value
-                if theme then
-                    self:ApplyTheme(theme)
-                end
-            end
-        })
-
-        local OverwriteButton = section:AddButton({
-            Name = "Overwrite Theme",
-            Callback = function()
-                local theme = CustomThemeDropdown.Value
-                if theme then
-                    self:SaveCustomTheme(theme)
-                    
-                    if self.Library.Notifier then
-                        self.Library.Notifier:Notify({
-                            Title = "Theme Manager",
-                            Content = "Overwrote theme: " .. theme,
-                            Icon = "edit",
-                            Duration = 3,
-                        })
-                    end
-                end
-            end
-        })
-
-        local DeleteButton = section:AddButton({
-            Name = "Delete Theme",
-            Callback = function()
-                local theme = CustomThemeDropdown.Value
-                if theme then
-                    local success, err = self:DeleteTheme(theme)
-                    
-                    if success then
-                        CustomThemeDropdown:Refresh(self:ReloadCustomThemes())
-                        
-                        if self.Library.Notifier then
-                            self.Library.Notifier:Notify({
-                                Title = "Theme Manager",
-                                Content = "Deleted theme: " .. theme,
-                                Icon = "trash",
-                                Duration = 3,
-                            })
-                        end
-                    else
-                        if self.Library.Notifier then
-                            self.Library.Notifier:Notify({
-                                Title = "Theme Manager",
-                                Content = "Failed to delete: " .. err,
-                                Icon = "alert-circle",
-                                Duration = 4,
-                            })
-                        end
-                    end
-                end
-            end
-        })
-
-        local RefreshButton = section:AddButton({
-            Name = "Refresh List",
-            Callback = function()
-                CustomThemeDropdown:Refresh(self:ReloadCustomThemes())
-                
-                if self.Library.Notifier then
-                    self.Library.Notifier:Notify({
-                        Title = "Theme Manager",
-                        Content = "Refreshed theme list",
-                        Icon = "refresh-cw",
-                        Duration = 2,
-                    })
-                end
-            end
-        })
-
-        local ResetDefaultButton = section:AddButton({
-            Name = "Reset Default",
-            Callback = function()
-                local defaultFile = self.Folder .. "/themes/default.txt"
-                local success = pcall(delfile, defaultFile)
-                
+    section:AddButton({
+        Name = "Delete Theme",
+        Callback = function()
+            local theme = customThemeDropdown.Value
+            if theme then
+                local success, message = self:DeleteTheme(theme)
                 if success then
-                    if self.Library.Notifier then
-                        self.Library.Notifier:Notify({
-                            Title = "Theme Manager",
-                            Content = "Reset default theme",
-                            Icon = "rotate-ccw",
-                            Duration = 3,
-                        })
-                    end
+                    customThemeDropdown:Refresh(self:GetCustomThemeList())
+                    self:Notify("Deleted theme: " .. theme, "trash")
                 else
-                    if self.Library.Notifier then
-                        self.Library.Notifier:Notify({
-                            Title = "Theme Manager",
-                            Content = "Failed to reset default",
-                            Icon = "alert-circle",
-                            Duration = 3,
-                        })
-                    end
+                    self:Notify("Failed to delete: " .. message, "alert-circle")
                 end
+            else
+                self:Notify("Please select a theme to delete", "alert-circle")
             end
-        })
+        end
+    })
 
-        -- Load default theme on initialization
-        self:LoadDefault()
-        self.AppliedToTab = true
+    section:AddButton({
+        Name = "Refresh List",
+        Callback = function()
+            customThemeDropdown:Refresh(self:GetCustomThemeList())
+            self:Notify("Refreshed theme list", "refresh-cw")
+        end
+    })
+
+    section:AddButton({
+        Name = "Reset Default",
+        Callback = function()
+            local defaultPath = self.Folder .. "/themes/default.txt"
+            local success = pcall(delfile, defaultPath)
+            
+            if success then
+                self:Notify("Reset default theme", "rotate-ccw")
+            else
+                self:Notify("Failed to reset default", "alert-circle")
+            end
+        end
+    })
+
+    print("[ThemeManager] UI created successfully")
+end
+
+function FatalityThemeManager:ApplyToTab(menu)
+    if not self.Library then
+        error("[ThemeManager] Must set Library first! Use ThemeManager:SetLibrary(Fatality)")
+        return
+    end
+    
+    if not menu then
+        error("[ThemeManager] Menu is nil!")
+        return
     end
 
-    function FatalityThemeManager:ApplyToTab(menu)
-        assert(self.Library, "Must set FatalityThemeManager.Library first!")
-        
-        -- Create section in the provided menu
-        local section = menu:AddSection({
+    -- Build folder structure
+    self:BuildFolderTree()
+    
+    -- Create section in the provided menu
+    local success, section = pcall(function()
+        return menu:AddSection({
             Name = "Theme Manager",
             Position = "left"
         })
-        
-        self:CreateThemeManager(section)
+    end)
+    
+    if not success then
+        error("[ThemeManager] Failed to create section: " .. tostring(section))
+        return
     end
-
-    function FatalityThemeManager:ApplyToSection(section)
-        assert(self.Library, "Must set FatalityThemeManager.Library first!")
-        self:CreateThemeManager(section)
-    end
-
-    -- Initialize folder structure
-    FatalityThemeManager:BuildFolderTree()
+    
+    self:CreateThemeManager(section)
+    
+    -- Load default theme
+    task.spawn(function()
+        task.wait(0.5) -- Wait for UI to initialize
+        self:LoadDefault()
+    end)
+    
+    self.AppliedToTab = true
+    print("[ThemeManager] Successfully applied to tab")
 end
 
--- Export to global environment
+function FatalityThemeManager:ApplyToSection(section)
+    if not self.Library then
+        error("[ThemeManager] Must set Library first!")
+        return
+    end
+    
+    self:BuildFolderTree()
+    self:CreateThemeManager(section)
+    
+    task.spawn(function()
+        task.wait(0.5)
+        self:LoadDefault()
+    end)
+    
+    self.AppliedToTab = true
+end
+
+-- Initialize
+FatalityThemeManager:BuildFolderTree()
+
+-- Export
 getgenv().FatalityThemeManager = FatalityThemeManager
 return FatalityThemeManager
