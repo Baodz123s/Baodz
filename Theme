@@ -1,6 +1,6 @@
 --[[
-    Fatality ThemeManager - Fixed Version
-    Compatible with Fatality UI Library
+    Complete Fatality ThemeManager
+    Full UI customization with all colors and properties
     
     Usage:
     local ThemeManager = loadstring(game:HttpGet("YOUR_GITHUB_RAW_URL"))()
@@ -11,37 +11,37 @@
 -- Services and compatibility
 local cloneref = cloneref or function(instance) return instance end
 local httpService = cloneref(game:GetService("HttpService"))
+local tweenService = cloneref(game:GetService("TweenService"))
+local runService = cloneref(game:GetService("RunService"))
 
--- File system functions with error handling
+-- File system functions with enhanced error handling
 local function safeCall(func, ...)
     local success, result = pcall(func, ...)
     return success and result or nil
 end
 
-local isfolder = isfolder or function() return false end
-local isfile = isfile or function() return false end
-local listfiles = listfiles or function() return {} end
-local makefolder = makefolder or function() end
-local writefile = writefile or function() end
-local readfile = readfile or function() return "" end
-local delfile = delfile or function() end
+-- File system compatibility layer
+local fileSystem = {}
+fileSystem.isfolder = isfolder or function() return false end
+fileSystem.isfile = isfile or function() return false end
+fileSystem.listfiles = listfiles or function() return {} end
+fileSystem.makefolder = makefolder or function() end
+fileSystem.writefile = writefile or function() end
+fileSystem.readfile = readfile or function() return "" end
+fileSystem.delfile = delfile or function() end
 
--- Enhanced file system compatibility
+-- Enhanced file system with fallbacks
 if typeof(copyfunction) == "function" then
-    local isfolder_copy = copyfunction(isfolder)
-    local isfile_copy = copyfunction(isfile)
-    local listfiles_copy = copyfunction(listfiles)
+    local originalFunctions = {
+        isfolder = copyfunction(fileSystem.isfolder),
+        isfile = copyfunction(fileSystem.isfile),
+        listfiles = copyfunction(fileSystem.listfiles)
+    }
 
-    isfolder = function(folder)
-        return safeCall(isfolder_copy, folder) or false
-    end
-
-    isfile = function(file)
-        return safeCall(isfile_copy, file) or false
-    end
-
-    listfiles = function(folder)
-        return safeCall(listfiles_copy, folder) or {}
+    for name, func in pairs(originalFunctions) do
+        fileSystem[name] = function(...)
+            return safeCall(func, ...) or (name == "listfiles" and {} or false)
+        end
     end
 end
 
@@ -51,107 +51,275 @@ local FatalityThemeManager = {}
 FatalityThemeManager.Folder = "FatalityThemes"
 FatalityThemeManager.Library = nil
 FatalityThemeManager.AppliedToTab = false
+FatalityThemeManager.CurrentTheme = "Default"
 
--- Built-in themes with Fatality color scheme
+-- Complete Fatality color scheme with all UI elements
+FatalityThemeManager.ColorScheme = {
+    -- Main colors
+    "Main",      -- Primary accent color
+    "Black",     -- Background color
+    "White",     -- Text color
+    "Dark",      -- Secondary background
+    "Red",       -- Error/warning color
+    
+    -- Extended UI colors
+    "Gray",      -- Disabled elements
+    "LightGray", -- Borders and dividers
+    "DarkGray",  -- Hover states
+    "Green",     -- Success color
+    "Blue",      -- Info color
+    "Yellow",    -- Warning color
+    "Orange",    -- Notification color
+    "Purple",    -- Special elements
+    "Pink",      -- Highlight color
+    "Cyan",      -- Active states
+    
+    -- Background variations
+    "BackgroundMain",    -- Main window background
+    "BackgroundSecond",  -- Secondary panels
+    "BackgroundThird",   -- Tertiary elements
+    
+    -- Border colors
+    "BorderMain",        -- Primary borders
+    "BorderSecond",      -- Secondary borders
+    "BorderHover",       -- Hover borders
+    
+    -- Text variations
+    "TextMain",          -- Primary text
+    "TextSecond",        -- Secondary text
+    "TextDisabled",      -- Disabled text
+    "TextHover",         -- Hover text
+    
+    -- Button colors
+    "ButtonMain",        -- Primary buttons
+    "ButtonHover",       -- Button hover
+    "ButtonActive",      -- Button active
+    "ButtonDisabled",    -- Button disabled
+    
+    -- Input colors
+    "InputBackground",   -- Input backgrounds
+    "InputBorder",       -- Input borders
+    "InputText",         -- Input text
+    "InputPlaceholder",  -- Placeholder text
+    
+    -- Slider colors
+    "SliderTrack",       -- Slider track
+    "SliderFill",        -- Slider fill
+    "SliderHandle",      -- Slider handle
+    
+    -- Dropdown colors
+    "DropdownBackground", -- Dropdown background
+    "DropdownBorder",     -- Dropdown border
+    "DropdownHover",      -- Dropdown hover
+    "DropdownSelected",   -- Selected item
+    
+    -- Toggle colors
+    "ToggleOff",         -- Toggle off state
+    "ToggleOn",          -- Toggle on state
+    "ToggleBorder",      -- Toggle border
+    
+    -- Tab colors
+    "TabInactive",       -- Inactive tabs
+    "TabActive",         -- Active tabs
+    "TabHover",          -- Tab hover
+    "TabBorder",         -- Tab borders
+    
+    -- Notification colors
+    "NotificationBg",    -- Notification background
+    "NotificationBorder", -- Notification border
+    "NotificationText",   -- Notification text
+    
+    -- Scrollbar colors
+    "ScrollbarTrack",    -- Scrollbar track
+    "ScrollbarHandle",   -- Scrollbar handle
+    "ScrollbarHover",    -- Scrollbar hover
+}
+
+-- Built-in themes with complete color schemes
 FatalityThemeManager.BuiltInThemes = {
     ["Default"] = {
         order = 1,
         colors = {
-            Main = "7d55ff",
-            Black = "0f0f0f", 
-            White = "ffffff",
-            Dark = "191919",
-            Red = "ff4757"
+            -- Main colors
+            Main = "7d55ff", Black = "0f0f0f", White = "ffffff", Dark = "191919", Red = "ff4757",
+            
+            -- Extended colors
+            Gray = "808080", LightGray = "c0c0c0", DarkGray = "404040", Green = "2ecc71", 
+            Blue = "3498db", Yellow = "f1c40f", Orange = "e67e22", Purple = "9b59b6", 
+            Pink = "e91e63", Cyan = "1abc9c",
+            
+            -- Backgrounds
+            BackgroundMain = "0f0f0f", BackgroundSecond = "1a1a1a", BackgroundThird = "252525",
+            
+            -- Borders
+            BorderMain = "333333", BorderSecond = "444444", BorderHover = "555555",
+            
+            -- Text
+            TextMain = "ffffff", TextSecond = "cccccc", TextDisabled = "666666", TextHover = "ffffff",
+            
+            -- Buttons
+            ButtonMain = "7d55ff", ButtonHover = "8f67ff", ButtonActive = "6b43ff", ButtonDisabled = "444444",
+            
+            -- Inputs
+            InputBackground = "1a1a1a", InputBorder = "333333", InputText = "ffffff", InputPlaceholder = "888888",
+            
+            -- Sliders
+            SliderTrack = "333333", SliderFill = "7d55ff", SliderHandle = "ffffff",
+            
+            -- Dropdowns
+            DropdownBackground = "1a1a1a", DropdownBorder = "333333", DropdownHover = "252525", DropdownSelected = "7d55ff",
+            
+            -- Toggles
+            ToggleOff = "333333", ToggleOn = "7d55ff", ToggleBorder = "444444",
+            
+            -- Tabs
+            TabInactive = "1a1a1a", TabActive = "7d55ff", TabHover = "252525", TabBorder = "333333",
+            
+            -- Notifications
+            NotificationBg = "1a1a1a", NotificationBorder = "333333", NotificationText = "ffffff",
+            
+            -- Scrollbars
+            ScrollbarTrack = "1a1a1a", ScrollbarHandle = "444444", ScrollbarHover = "555555"
         }
     },
     ["Fatality Dark"] = {
         order = 2,
         colors = {
-            Main = "c50754",
-            Black = "191335",
-            White = "ffffff", 
-            Dark = "1e1842",
-            Red = "ff4757"
+            Main = "c50754", Black = "191335", White = "ffffff", Dark = "1e1842", Red = "ff4757",
+            Gray = "6a5a8a", LightGray = "8a7aaa", DarkGray = "2d1b3d", Green = "2ecc71",
+            Blue = "3498db", Yellow = "f1c40f", Orange = "e67e22", Purple = "9b59b6",
+            Pink = "e91e63", Cyan = "1abc9c",
+            BackgroundMain = "191335", BackgroundSecond = "1e1842", BackgroundThird = "2d1b3d",
+            BorderMain = "3c355d", BorderSecond = "4a4370", BorderHover = "5a5380",
+            TextMain = "ffffff", TextSecond = "cccccc", TextDisabled = "6a5a8a", TextHover = "ffffff",
+            ButtonMain = "c50754", ButtonHover = "d71965", ButtonActive = "b30643", ButtonDisabled = "4a4370",
+            InputBackground = "1e1842", InputBorder = "3c355d", InputText = "ffffff", InputPlaceholder = "8a7aaa",
+            SliderTrack = "3c355d", SliderFill = "c50754", SliderHandle = "ffffff",
+            DropdownBackground = "1e1842", DropdownBorder = "3c355d", DropdownHover = "2d1b3d", DropdownSelected = "c50754",
+            ToggleOff = "3c355d", ToggleOn = "c50754", ToggleBorder = "4a4370",
+            TabInactive = "1e1842", TabActive = "c50754", TabHover = "2d1b3d", TabBorder = "3c355d",
+            NotificationBg = "1e1842", NotificationBorder = "3c355d", NotificationText = "ffffff",
+            ScrollbarTrack = "1e1842", ScrollbarHandle = "4a4370", ScrollbarHover = "5a5380"
         }
     },
     ["Cyber Blue"] = {
         order = 3,
         colors = {
-            Main = "00d4ff",
-            Black = "0a0a0a",
-            White = "ffffff",
-            Dark = "1a1a1a", 
-            Red = "ff073a"
+            Main = "00d4ff", Black = "0a0a0a", White = "ffffff", Dark = "1a1a1a", Red = "ff073a",
+            Gray = "4a6b7a", LightGray = "6a8b9a", DarkGray = "2a3a4a", Green = "00ff9f",
+            Blue = "00d4ff", Yellow = "ffff00", Orange = "ff8c00", Purple = "8a2be2",
+            Pink = "ff1493", Cyan = "00ffff",
+            BackgroundMain = "0a0a0a", BackgroundSecond = "1a1a1a", BackgroundThird = "2a2a2a",
+            BorderMain = "00d4ff", BorderSecond = "4a6b7a", BorderHover = "00e6ff",
+            TextMain = "ffffff", TextSecond = "cccccc", TextDisabled = "4a6b7a", TextHover = "00d4ff",
+            ButtonMain = "00d4ff", ButtonHover = "00e6ff", ButtonActive = "00c2ed", ButtonDisabled = "4a6b7a",
+            InputBackground = "1a1a1a", InputBorder = "00d4ff", InputText = "ffffff", InputPlaceholder = "6a8b9a",
+            SliderTrack = "4a6b7a", SliderFill = "00d4ff", SliderHandle = "ffffff",
+            DropdownBackground = "1a1a1a", DropdownBorder = "00d4ff", DropdownHover = "2a2a2a", DropdownSelected = "00d4ff",
+            ToggleOff = "4a6b7a", ToggleOn = "00d4ff", ToggleBorder = "6a8b9a",
+            TabInactive = "1a1a1a", TabActive = "00d4ff", TabHover = "2a2a2a", TabBorder = "4a6b7a",
+            NotificationBg = "1a1a1a", NotificationBorder = "00d4ff", NotificationText = "ffffff",
+            ScrollbarTrack = "1a1a1a", ScrollbarHandle = "4a6b7a", ScrollbarHover = "6a8b9a"
         }
     },
-    ["Neon Green"] = {
+    ["Matrix Green"] = {
         order = 4,
         colors = {
-            Main = "39ff14",
-            Black = "0d0d0d",
-            White = "ffffff",
-            Dark = "1d1d1d",
-            Red = "ff1744"
+            Main = "00ff41", Black = "000000", White = "00ff41", Dark = "0d1b0d", Red = "ff0000",
+            Gray = "004d0d", LightGray = "006d1d", DarkGray = "002d0d", Green = "00ff41",
+            Blue = "00ff41", Yellow = "00ff41", Orange = "00ff41", Purple = "00ff41",
+            Pink = "00ff41", Cyan = "00ff41",
+            BackgroundMain = "000000", BackgroundSecond = "0d1b0d", BackgroundThird = "1a2b1a",
+            BorderMain = "00ff41", BorderSecond = "004d0d", BorderHover = "00ff55",
+            TextMain = "00ff41", TextSecond = "00cc33", TextDisabled = "004d0d", TextHover = "00ff55",
+            ButtonMain = "00ff41", ButtonHover = "00ff55", ButtonActive = "00cc33", ButtonDisabled = "004d0d",
+            InputBackground = "0d1b0d", InputBorder = "00ff41", InputText = "00ff41", InputPlaceholder = "006d1d",
+            SliderTrack = "004d0d", SliderFill = "00ff41", SliderHandle = "00ff41",
+            DropdownBackground = "0d1b0d", DropdownBorder = "00ff41", DropdownHover = "1a2b1a", DropdownSelected = "00ff41",
+            ToggleOff = "004d0d", ToggleOn = "00ff41", ToggleBorder = "006d1d",
+            TabInactive = "0d1b0d", TabActive = "00ff41", TabHover = "1a2b1a", TabBorder = "004d0d",
+            NotificationBg = "0d1b0d", NotificationBorder = "00ff41", NotificationText = "00ff41",
+            ScrollbarTrack = "0d1b0d", ScrollbarHandle = "004d0d", ScrollbarHover = "006d1d"
         }
     },
     ["Purple Haze"] = {
         order = 5,
         colors = {
-            Main = "9c27b0",
-            Black = "1a0e2e",
-            White = "ffffff",
-            Dark = "2d1b3d",
-            Red = "e91e63"
+            Main = "9c27b0", Black = "1a0e2e", White = "ffffff", Dark = "2d1b3d", Red = "e91e63",
+            Gray = "6a4a7a", LightGray = "8a6a9a", DarkGray = "4a2a5a", Green = "8bc34a",
+            Blue = "673ab7", Yellow = "ffc107", Orange = "ff9800", Purple = "9c27b0",
+            Pink = "e91e63", Cyan = "00bcd4",
+            BackgroundMain = "1a0e2e", BackgroundSecond = "2d1b3d", BackgroundThird = "3d2b4d",
+            BorderMain = "9c27b0", BorderSecond = "6a4a7a", BorderHover = "b039c4",
+            TextMain = "ffffff", TextSecond = "cccccc", TextDisabled = "6a4a7a", TextHover = "ffffff",
+            ButtonMain = "9c27b0", ButtonHover = "b039c4", ButtonActive = "8a1f9e", ButtonDisabled = "6a4a7a",
+            InputBackground = "2d1b3d", InputBorder = "9c27b0", InputText = "ffffff", InputPlaceholder = "8a6a9a",
+            SliderTrack = "6a4a7a", SliderFill = "9c27b0", SliderHandle = "ffffff",
+            DropdownBackground = "2d1b3d", DropdownBorder = "9c27b0", DropdownHover = "3d2b4d", DropdownSelected = "9c27b0",
+            ToggleOff = "6a4a7a", ToggleOn = "9c27b0", ToggleBorder = "8a6a9a",
+            TabInactive = "2d1b3d", TabActive = "9c27b0", TabHover = "3d2b4d", TabBorder = "6a4a7a",
+            NotificationBg = "2d1b3d", NotificationBorder = "9c27b0", NotificationText = "ffffff",
+            ScrollbarTrack = "2d1b3d", ScrollbarHandle = "6a4a7a", ScrollbarHover = "8a6a9a"
         }
     },
-    ["Ocean"] = {
+    ["Ocean Deep"] = {
         order = 6,
         colors = {
-            Main = "0077be",
-            Black = "0f1419",
-            White = "ffffff",
-            Dark = "1e2328",
-            Red = "f07178"
+            Main = "0077be", Black = "0f1419", White = "ffffff", Dark = "1e2328", Red = "f07178",
+            Gray = "4a6b7a", LightGray = "6a8b9a", DarkGray = "2a3a4a", Green = "7fdbca",
+            Blue = "0077be", Yellow = "ffb454", Orange = "ff8c69", Purple = "c792ea",
+            Pink = "f78c6c", Cyan = "89ddff",
+            BackgroundMain = "0f1419", BackgroundSecond = "1e2328", BackgroundThird = "2d3238",
+            BorderMain = "0077be", BorderSecond = "4a6b7a", BorderHover = "0088cf",
+            TextMain = "ffffff", TextSecond = "cccccc", TextDisabled = "4a6b7a", TextHover = "ffffff",
+            ButtonMain = "0077be", ButtonHover = "0088cf", ButtonActive = "0066ad", ButtonDisabled = "4a6b7a",
+            InputBackground = "1e2328", InputBorder = "0077be", InputText = "ffffff", InputPlaceholder = "6a8b9a",
+            SliderTrack = "4a6b7a", SliderFill = "0077be", SliderHandle = "ffffff",
+            DropdownBackground = "1e2328", DropdownBorder = "0077be", DropdownHover = "2d3238", DropdownSelected = "0077be",
+            ToggleOff = "4a6b7a", ToggleOn = "0077be", ToggleBorder = "6a8b9a",
+            TabInactive = "1e2328", TabActive = "0077be", TabHover = "2d3238", TabBorder = "4a6b7a",
+            NotificationBg = "1e2328", NotificationBorder = "0077be", NotificationText = "ffffff",
+            ScrollbarTrack = "1e2328", ScrollbarHandle = "4a6b7a", ScrollbarHover = "6a8b9a"
         }
     },
-    ["Sunset"] = {
+    ["Sunset Orange"] = {
         order = 7,
         colors = {
-            Main = "ff6b35",
-            Black = "1a1a1a",
-            White = "ffffff",
-            Dark = "2d2d2d",
-            Red = "ff4757"
-        }
-    },
-    ["Mint"] = {
-        order = 8,
-        colors = {
-            Main = "3db488",
-            Black = "1c1c1c",
-            White = "ffffff",
-            Dark = "242424",
-            Red = "e74c3c"
+            Main = "ff6b35", Black = "1a1a1a", White = "ffffff", Dark = "2d2d2d", Red = "ff4757",
+            Gray = "7a5a4a", LightGray = "9a7a6a", DarkGray = "5a3a2a", Green = "2ecc71",
+            Blue = "3498db", Yellow = "f1c40f", Orange = "ff6b35", Purple = "9b59b6",
+            Pink = "e91e63", Cyan = "1abc9c",
+            BackgroundMain = "1a1a1a", BackgroundSecond = "2d2d2d", BackgroundThird = "3d3d3d",
+            BorderMain = "ff6b35", BorderSecond = "7a5a4a", BorderHover = "ff7d47",
+            TextMain = "ffffff", TextSecond = "cccccc", TextDisabled = "7a5a4a", TextHover = "ffffff",
+            ButtonMain = "ff6b35", ButtonHover = "ff7d47", ButtonActive = "ff5923", ButtonDisabled = "7a5a4a",
+            InputBackground = "2d2d2d", InputBorder = "ff6b35", InputText = "ffffff", InputPlaceholder = "9a7a6a",
+            SliderTrack = "7a5a4a", SliderFill = "ff6b35", SliderHandle = "ffffff",
+            DropdownBackground = "2d2d2d", DropdownBorder = "ff6b35", DropdownHover = "3d3d3d", DropdownSelected = "ff6b35",
+            ToggleOff = "7a5a4a", ToggleOn = "ff6b35", ToggleBorder = "9a7a6a",
+            TabInactive = "2d2d2d", TabActive = "ff6b35", TabHover = "3d3d3d", TabBorder = "7a5a4a",
+            NotificationBg = "2d2d2d", NotificationBorder = "ff6b35", NotificationText = "ffffff",
+            ScrollbarTrack = "2d2d2d", ScrollbarHandle = "7a5a4a", ScrollbarHover = "9a7a6a"
         }
     },
     ["Rose Gold"] = {
-        order = 9,
+        order = 8,
         colors = {
-            Main = "e91e63",
-            Black = "1a1a1a",
-            White = "ffffff",
-            Dark = "2d2d2d",
-            Red = "f44336"
-        }
-    },
-    ["Matrix"] = {
-        order = 10,
-        colors = {
-            Main = "00ff41",
-            Black = "000000",
-            White = "00ff41",
-            Dark = "0d1b0d",
-            Red = "ff0000"
+            Main = "e91e63", Black = "1a1a1a", White = "ffffff", Dark = "2d2d2d", Red = "f44336",
+            Gray = "7a4a6a", LightGray = "9a6a8a", DarkGray = "5a2a4a", Green = "4caf50",
+            Blue = "2196f3", Yellow = "ffeb3b", Orange = "ff9800", Purple = "9c27b0",
+            Pink = "e91e63", Cyan = "00bcd4",
+            BackgroundMain = "1a1a1a", BackgroundSecond = "2d2d2d", BackgroundThird = "3d3d3d",
+            BorderMain = "e91e63", BorderSecond = "7a4a6a", BorderHover = "f73074",
+            TextMain = "ffffff", TextSecond = "cccccc", TextDisabled = "7a4a6a", TextHover = "ffffff",
+            ButtonMain = "e91e63", ButtonHover = "f73074", ButtonActive = "d70c52", ButtonDisabled = "7a4a6a",
+            InputBackground = "2d2d2d", InputBorder = "e91e63", InputText = "ffffff", InputPlaceholder = "9a6a8a",
+            SliderTrack = "7a4a6a", SliderFill = "e91e63", SliderHandle = "ffffff",
+            DropdownBackground = "2d2d2d", DropdownBorder = "e91e63", DropdownHover = "3d3d3d", DropdownSelected = "e91e63",
+            ToggleOff = "7a4a6a", ToggleOn = "e91e63", ToggleBorder = "9a6a8a",
+            TabInactive = "2d2d2d", TabActive = "e91e63", TabHover = "3d3d3d", TabBorder = "7a4a6a",
+            NotificationBg = "2d2d2d", NotificationBorder = "e91e63", NotificationText = "ffffff",
+            ScrollbarTrack = "2d2d2d", ScrollbarHandle = "7a4a6a", ScrollbarHover = "9a6a8a"
         }
     }
 }
@@ -159,18 +327,48 @@ FatalityThemeManager.BuiltInThemes = {
 -- Core functions
 function FatalityThemeManager:SetLibrary(library)
     self.Library = library
-    print("[ThemeManager] Library set successfully")
+    
+    -- Initialize extended color scheme if not present
+    if self.Library.Colors then
+        for _, colorName in pairs(self.ColorScheme) do
+            if not self.Library.Colors[colorName] then
+                -- Set default colors for missing ones
+                local defaultColor = self.BuiltInThemes["Default"].colors[colorName]
+                if defaultColor then
+                    self.Library.Colors[colorName] = Color3.fromHex(defaultColor)
+                else
+                    -- Fallback colors
+                    local fallbacks = {
+                        Gray = Color3.fromRGB(128, 128, 128),
+                        LightGray = Color3.fromRGB(192, 192, 192),
+                        DarkGray = Color3.fromRGB(64, 64, 64),
+                        Green = Color3.fromRGB(46, 204, 113),
+                        Blue = Color3.fromRGB(52, 152, 219),
+                        Yellow = Color3.fromRGB(241, 196, 15),
+                        Orange = Color3.fromRGB(230, 126, 34),
+                        Purple = Color3.fromRGB(155, 89, 182),
+                        Pink = Color3.fromRGB(233, 30, 99),
+                        Cyan = Color3.fromRGB(26, 188, 156)
+                    }
+                    
+                    self.Library.Colors[colorName] = fallbacks[colorName] or Color3.fromRGB(255, 255, 255)
+                end
+            end
+        end
+    end
+    
+    print("[ThemeManager] Library set with extended color scheme")
 end
 
 function FatalityThemeManager:BuildFolderTree()
     local success = pcall(function()
-        if not isfolder(self.Folder) then
-            makefolder(self.Folder)
+        if not fileSystem.isfolder(self.Folder) then
+            fileSystem.makefolder(self.Folder)
         end
         
         local themesFolder = self.Folder .. "/themes"
-        if not isfolder(themesFolder) then
-            makefolder(themesFolder)
+        if not fileSystem.isfolder(themesFolder) then
+            fileSystem.makefolder(themesFolder)
         end
     end)
     
@@ -196,29 +394,87 @@ function FatalityThemeManager:ApplyTheme(themeName)
 
     local colors = themeData.colors or themeData
     
-    -- Apply colors to Fatality library
+    -- Apply all colors to Fatality library
     for colorName, hexValue in pairs(colors) do
-        if self.Library.Colors and self.Library.Colors[colorName] then
+        if self.Library.Colors then
             local success, color = pcall(Color3.fromHex, hexValue)
             if success then
                 self.Library.Colors[colorName] = color
+            else
+                warn("[ThemeManager] Invalid hex color: " .. tostring(hexValue) .. " for " .. colorName)
             end
         end
     end
 
-    -- Update UI
-    self:UpdateUI()
+    -- Update current theme
+    self.CurrentTheme = themeName
+    
+    -- Update UI with animation
+    self:UpdateUIAnimated()
     
     -- Notify user
     self:Notify("Applied theme: " .. themeName, "palette")
     print("[ThemeManager] Applied theme: " .. themeName)
 end
 
-function FatalityThemeManager:UpdateUI()
-    if self.Library and self.Library.UpdateColorsUsingRegistry then
+function FatalityThemeManager:UpdateUIAnimated()
+    if not self.Library then return end
+    
+    -- Animate color transitions
+    local function animateColorChange(object, property, newColor, duration)
+        if not object or not object[property] then return end
+        
+        local startColor = object[property]
+        local startTime = tick()
+        duration = duration or 0.3
+        
+        local connection
+        connection = runService.Heartbeat:Connect(function()
+            local elapsed = tick() - startTime
+            local progress = math.min(elapsed / duration, 1)
+            
+            -- Smooth interpolation
+            local currentColor = startColor:Lerp(newColor, progress)
+            object[property] = currentColor
+            
+            if progress >= 1 then
+                connection:Disconnect()
+            end
+        end)
+    end
+    
+    -- Update library colors with animation
+    if self.Library.UpdateColorsUsingRegistry then
         pcall(self.Library.UpdateColorsUsingRegistry, self.Library)
-    elseif self.Library and self.Library.UpdateColors then
+    elseif self.Library.UpdateColors then
         pcall(self.Library.UpdateColors, self.Library)
+    end
+    
+    -- Custom UI updates for better visual feedback
+    self:UpdateCustomElements()
+end
+
+function FatalityThemeManager:UpdateCustomElements()
+    -- Update any custom UI elements created by ThemeManager
+    if self.CustomElements then
+        for _, element in pairs(self.CustomElements) do
+            if element and element.Parent then
+                -- Update element colors based on current theme
+                local currentTheme = self.BuiltInThemes[self.CurrentTheme] or self:GetCustomTheme(self.CurrentTheme)
+                if currentTheme and currentTheme.colors then
+                    -- Apply theme colors to custom elements
+                    if element.BackgroundColor3 then
+                        element.BackgroundColor3 = Color3.fromHex(currentTheme.colors.BackgroundMain or "1a1a1a")
+                    end
+                    if element.BorderColor3 then
+                        element.BorderColor3 = Color3.fromHex(currentTheme.colors.BorderMain or "333333")
+                    end
+                    if element.TextColor3 then
+                        element.TextColor3 = Color3.fromHex(currentTheme.colors.TextMain or "ffffff")
+                    end
+                end
+            end
+        end
     end
 end
 
@@ -238,11 +494,11 @@ end
 function FatalityThemeManager:GetCustomTheme(name)
     local path = self.Folder .. "/themes/" .. name .. ".json"
     
-    if not isfile(path) then
+    if not fileSystem.isfile(path) then
         return nil
     end
 
-    local success, data = pcall(readfile, path)
+    local success, data = pcall(fileSystem.readfile, path)
     if not success then
         return nil
     end
@@ -268,17 +524,20 @@ function FatalityThemeManager:SaveCustomTheme(name)
 
     local theme = {}
     
-    -- Get current colors from library
-    for colorName, color in pairs(self.Library.Colors) do
-        if typeof(color) == "Color3" then
-            theme[colorName] = color:ToHex()
+    -- Get all current colors from library
+    for _, colorName in pairs(self.ColorScheme) do
+        if self.Library.Colors[colorName] then
+            local color = self.Library.Colors[colorName]
+            if typeof(color) == "Color3" then
+                theme[colorName] = color:ToHex()
+            end
         end
     end
 
     local path = self.Folder .. "/themes/" .. name .. ".json"
     local success = pcall(function()
         local jsonData = httpService:JSONEncode(theme)
-        writefile(path, jsonData)
+        fileSystem.writefile(path, jsonData)
     end)
 
     if success then
@@ -296,17 +555,17 @@ function FatalityThemeManager:DeleteTheme(name)
     end
 
     local path = self.Folder .. "/themes/" .. name .. ".json"
-    if not isfile(path) then
+    if not fileSystem.isfile(path) then
         return false, "Theme file not found"
     end
 
-    local success = pcall(delfile, path)
+    local success = pcall(fileSystem.delfile, path)
     return success, success and "Success" or "Delete failed"
 end
 
 function FatalityThemeManager:GetCustomThemeList()
     local themes = {}
-    local success, files = pcall(listfiles, self.Folder .. "/themes")
+    local success, files = pcall(fileSystem.listfiles, self.Folder .. "/themes")
     
     if not success then
         return themes
@@ -328,8 +587,8 @@ function FatalityThemeManager:LoadDefault()
     local defaultPath = self.Folder .. "/themes/default.txt"
     local themeName = "Default"
     
-    if isfile(defaultPath) then
-        local success, content = pcall(readfile, defaultPath)
+    if fileSystem.isfile(defaultPath) then
+        local success, content = pcall(fileSystem.readfile, defaultPath)
         if success and content and content ~= "" then
             if self.BuiltInThemes[content] or self:GetCustomTheme(content) then
                 themeName = content
@@ -343,7 +602,7 @@ end
 
 function FatalityThemeManager:SaveDefault(themeName)
     local path = self.Folder .. "/themes/default.txt"
-    local success = pcall(writefile, path, themeName)
+    local success = pcall(fileSystem.writefile, path, themeName)
     
     if success then
         self:Notify("Set default theme to: " .. themeName, "check")
@@ -354,41 +613,137 @@ function FatalityThemeManager:SaveDefault(themeName)
     return success
 end
 
--- UI Creation
+function FatalityThemeManager:ExportTheme(themeName)
+    local themeData = self.BuiltInThemes[themeName] or self:GetCustomTheme(themeName)
+    if not themeData then
+        self:Notify("Theme not found: " .. themeName, "alert-circle")
+        return
+    end
+    
+    local exportData = {
+        name = themeName,
+        colors = themeData.colors,
+        exported = os.time(),
+        version = "1.0"
+    }
+    
+    local jsonString = httpService:JSONEncode(exportData)
+    
+    -- Copy to clipboard if available
+    if setclipboard then
+        setclipboard(jsonString)
+        self:Notify("Theme exported to clipboard!", "copy")
+    else
+        self:Notify("Export data ready (clipboard not available)", "download")
+        print("[ThemeManager] Export data:", jsonString)
+    end
+end
+
+function FatalityThemeManager:ImportTheme(jsonData)
+    local success, themeData = pcall(httpService.JSONDecode, httpService, jsonData)
+    if not success then
+        self:Notify("Invalid theme data", "alert-circle")
+        return false
+    end
+    
+    if not themeData.name or not themeData.colors then
+        self:Notify("Invalid theme format", "alert-circle")
+        return false
+    end
+    
+    local success2 = self:SaveCustomTheme(themeData.name)
+    if success2 then
+        -- Apply the imported colors
+        for colorName, hexValue in pairs(themeData.colors) do
+            if self.Library.Colors[colorName] then
+                local success3, color = pcall(Color3.fromHex, hexValue)
+                if success3 then
+                    self.Library.Colors[colorName] = color
+                end
+            end
+        end
+        
+        self:UpdateUIAnimated()
+        self:Notify("Imported theme: " .. themeData.name, "download")
+        return true
+    end
+    
+    return false
+end
+
+-- UI Creation with enhanced features
 function FatalityThemeManager:CreateThemeManager(section)
     if not section then
         warn("[ThemeManager] Section is nil!")
         return
     end
 
-    -- Color pickers for each Fatality color
-    local colorPickers = {}
-    
-    local colorNames = {
-        {name = "Main", display = "Main Color"},
-        {name = "Black", display = "Background Color"},
-        {name = "White", display = "Text Color"},
-        {name = "Dark", display = "Dark Color"},
-        {name = "Red", display = "Red Color"}
+    self.CustomElements = {}
+
+    -- Color pickers organized by category
+    local colorCategories = {
+        {
+            name = "Main Colors",
+            colors = {
+                {name = "Main", display = "Primary Color"},
+                {name = "Black", display = "Background"},
+                {name = "White", display = "Text Color"},
+                {name = "Dark", display = "Secondary Background"},
+                {name = "Red", display = "Error Color"}
+            }
+        },
+        {
+            name = "Extended Colors", 
+            colors = {
+                {name = "Gray", display = "Gray"},
+                {name = "Green", display = "Success"},
+                {name = "Blue", display = "Info"},
+                {name = "Yellow", display = "Warning"},
+                {name = "Orange", display = "Notification"},
+                {name = "Purple", display = "Special"},
+                {name = "Pink", display = "Highlight"},
+                {name = "Cyan", display = "Active"}
+            }
+        },
+        {
+            name = "UI Elements",
+            colors = {
+                {name = "ButtonMain", display = "Button Color"},
+                {name = "InputBackground", display = "Input Background"},
+                {name = "SliderFill", display = "Slider Fill"},
+                {name = "ToggleOn", display = "Toggle On"},
+                {name = "TabActive", display = "Active Tab"},
+                {name = "BorderMain", display = "Border Color"}
+            }
+        }
     }
 
-    for _, colorInfo in pairs(colorNames) do
-        local defaultColor = (self.Library.Colors and self.Library.Colors[colorInfo.name]) or Color3.new(1, 1, 1)
+    -- Create color pickers for each category
+    for _, category in pairs(colorCategories) do
+        -- Add category label
+        section:AddLabel(category.name)
         
-        colorPickers[colorInfo.name] = section:AddColorPicker({
-            Name = colorInfo.display,
-            Default = defaultColor,
-            Flag = "ThemeManager_" .. colorInfo.name,
-            Callback = function(color)
-                if self.Library.Colors then
-                    self.Library.Colors[colorInfo.name] = color
-                    self:UpdateUI()
+        for _, colorInfo in pairs(category.colors) do
+            local colorName = colorInfo.name
+            local defaultColor = (self.Library.Colors and self.Library.Colors[colorName]) or Color3.new(1, 1, 1)
+            
+            section:AddColorPicker({
+                Name = colorInfo.display,
+                Default = defaultColor,
+                Flag = "ThemeManager_" .. colorName,
+                Callback = function(color)
+                    if self.Library.Colors then
+                        self.Library.Colors[colorName] = color
+                        self:UpdateUIAnimated()
+                    end
                 end
-            end
-        })
+            })
+        end
     end
 
-    -- Built-in themes dropdown
+    -- Theme presets
+    section:AddLabel("Theme Presets")
+    
     local builtinThemes = {}
     for name, data in pairs(self.BuiltInThemes) do
         table.insert(builtinThemes, name)
@@ -420,9 +775,21 @@ function FatalityThemeManager:CreateThemeManager(section)
         end
     })
 
+    section:AddButton({
+        Name = "Export Theme",
+        Callback = function()
+            local currentTheme = themeDropdown.Value
+            if currentTheme then
+                self:ExportTheme(currentTheme)
+            end
+        end
+    })
+
     -- Custom theme management
+    section:AddLabel("Custom Themes")
+    
     local customThemeInput = section:AddTextbox({
-        Name = "Custom Theme Name",
+        Name = "Theme Name",
         Default = "",
         TextDisappear = true,
         Flag = "ThemeManager_CustomName",
@@ -430,7 +797,7 @@ function FatalityThemeManager:CreateThemeManager(section)
     })
 
     section:AddButton({
-        Name = "Save Current Theme",
+        Name = "Save Current Colors",
         Callback = function()
             local name = customThemeInput.Value
             if name and name ~= "" then
@@ -455,13 +822,13 @@ function FatalityThemeManager:CreateThemeManager(section)
     })
 
     section:AddButton({
-        Name = "Load Custom Theme",
+        Name = "Load Theme",
         Callback = function()
             local theme = customThemeDropdown.Value
             if theme then
                 self:ApplyTheme(theme)
             else
-                self:Notify("Please select a custom theme", "alert-circle")
+                self:Notify("Please select a theme", "alert-circle")
             end
         end
     })
@@ -506,11 +873,54 @@ function FatalityThemeManager:CreateThemeManager(section)
         end
     })
 
+    -- Import/Export
+    section:AddLabel("Import/Export")
+    
+    local importInput = section:AddTextbox({
+        Name = "Import Data",
+        Default = "",
+        TextDisappear = false,
+        Flag = "ThemeManager_ImportData",
+        Callback = function() end
+    })
+
     section:AddButton({
-        Name = "Reset Default",
+        Name = "Import Theme",
+        Callback = function()
+            local data = importInput.Value
+            if data and data ~= "" then
+                if self:ImportTheme(data) then
+                    customThemeDropdown:Refresh(self:GetCustomThemeList())
+                end
+            else
+                self:Notify("Please paste theme data", "alert-circle")
+            end
+        end
+    })
+
+    section:AddButton({
+        Name = "Export Current",
+        Callback = function()
+            self:ExportTheme(self.CurrentTheme)
+        end
+    })
+
+    -- Advanced options
+    section:AddLabel("Advanced")
+    
+    section:AddButton({
+        Name = "Reset All Colors",
+        Callback = function()
+            self:ApplyTheme("Default")
+            self:Notify("Reset to default colors", "rotate-ccw")
+        end
+    })
+
+    section:AddButton({
+        Name = "Reset Default Theme",
         Callback = function()
             local defaultPath = self.Folder .. "/themes/default.txt"
-            local success = pcall(delfile, defaultPath)
+            local success = pcall(fileSystem.delfile, defaultPath)
             
             if success then
                 self:Notify("Reset default theme", "rotate-ccw")
@@ -520,7 +930,7 @@ function FatalityThemeManager:CreateThemeManager(section)
         end
     })
 
-    print("[ThemeManager] UI created successfully")
+    print("[ThemeManager] Complete UI created successfully")
 end
 
 function FatalityThemeManager:ApplyToTab(menu)
@@ -552,14 +962,14 @@ function FatalityThemeManager:ApplyToTab(menu)
     
     self:CreateThemeManager(section)
     
-    -- Load default theme
+    -- Load default theme with delay
     task.spawn(function()
-        task.wait(0.5) -- Wait for UI to initialize
+        task.wait(1) -- Longer wait for complete initialization
         self:LoadDefault()
     end)
     
     self.AppliedToTab = true
-    print("[ThemeManager] Successfully applied to tab")
+    print("[ThemeManager] Successfully applied to tab with complete features")
 end
 
 function FatalityThemeManager:ApplyToSection(section)
@@ -572,7 +982,7 @@ function FatalityThemeManager:ApplyToSection(section)
     self:CreateThemeManager(section)
     
     task.spawn(function()
-        task.wait(0.5)
+        task.wait(1)
         self:LoadDefault()
     end)
     
