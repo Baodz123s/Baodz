@@ -1,0 +1,242 @@
+local ThemeManager = {}
+
+-- Services
+local HttpService = game:GetService("HttpService")
+
+-- Configuration
+ThemeManager.Folder = "FatalityThemes"
+ThemeManager.Library = nil
+ThemeManager.AppliedToTab = false
+
+-- Built-in themes
+ThemeManager.BuiltInThemes = {
+    ["Default"] = {
+        Main = Color3.fromRGB(255, 106, 133),
+        Black = Color3.fromRGB(16, 16, 16),
+        Background = Color3.fromRGB(19, 19, 19),
+        Secondary = Color3.fromRGB(24, 24, 24),
+        Outline = Color3.fromRGB(29, 29, 29)
+    },
+    ["Cyberpunk"] = {
+        Main = Color3.fromRGB(0, 255, 159),
+        Black = Color3.fromRGB(26, 26, 46),
+        Background = Color3.fromRGB(38, 35, 53),
+        Secondary = Color3.fromRGB(65, 60, 94),
+        Outline = Color3.fromRGB(88, 82, 122)
+    },
+    ["Tokyo Night"] = {
+        Main = Color3.fromRGB(103, 89, 179),
+        Black = Color3.fromRGB(22, 22, 31),
+        Background = Color3.fromRGB(25, 25, 37),
+        Secondary = Color3.fromRGB(50, 50, 50),
+        Outline = Color3.fromRGB(70, 70, 70)
+    },
+    ["Dracula"] = {
+        Main = Color3.fromRGB(255, 121, 198),
+        Black = Color3.fromRGB(30, 42, 54),
+        Background = Color3.fromRGB(40, 42, 54),
+        Secondary = Color3.fromRGB(68, 71, 90),
+        Outline = Color3.fromRGB(98, 114, 164)
+    },
+    ["Nord"] = {
+        Main = Color3.fromRGB(136, 192, 208),
+        Black = Color3.fromRGB(46, 52, 64),
+        Background = Color3.fromRGB(59, 66, 82),
+        Secondary = Color3.fromRGB(76, 86, 106),
+        Outline = Color3.fromRGB(129, 161, 193)
+    },
+    ["Gruvbox"] = {
+        Main = Color3.fromRGB(251, 73, 52),
+        Black = Color3.fromRGB(40, 40, 40),
+        Background = Color3.fromRGB(60, 56, 54),
+        Secondary = Color3.fromRGB(80, 73, 69),
+        Outline = Color3.fromRGB(146, 131, 116)
+    }
+}
+
+-- Utility functions
+function ThemeManager:BuildFolderTree()
+    if not isfolder(self.Folder) then
+        makefolder(self.Folder)
+    end
+    if not isfolder(self.Folder .. "/themes") then
+        makefolder(self.Folder .. "/themes")
+    end
+end
+
+function ThemeManager:SetLibrary(library)
+    self.Library = library
+    self:BuildFolderTree()
+end
+
+-- Theme operations
+function ThemeManager:ApplyTheme(themeName)
+    if not self.Library then return end
+    
+    local theme = self.BuiltInThemes[themeName] or self:GetCustomTheme(themeName)
+    if not theme then return end
+    
+    -- Apply colors to Fatality
+    if theme.Main then self.Library.Colors.Main = theme.Main end
+    if theme.Black then self.Library.Colors.Black = theme.Black end
+    
+    -- Update all UI elements
+    self:UpdateAllElements()
+end
+
+function ThemeManager:UpdateAllElements()
+    -- This would update all existing UI elements with new colors
+    -- Implementation depends on how Fatality stores its elements
+end
+
+function ThemeManager:SaveCustomTheme(name, colors)
+    if name:gsub(" ", "") == "" then
+        return false, "Invalid theme name"
+    end
+    
+    local themeData = {
+        Main = colors.Main:ToHex(),
+        Black = colors.Black:ToHex(),
+        Background = colors.Background and colors.Background:ToHex() or nil,
+        Secondary = colors.Secondary and colors.Secondary:ToHex() or nil,
+        Outline = colors.Outline and colors.Outline:ToHex() or nil
+    }
+    
+    local success, err = pcall(function()
+        writefile(self.Folder .. "/themes/" .. name .. ".json", HttpService:JSONEncode(themeData))
+    end)
+    
+    return success, err
+end
+
+function ThemeManager:GetCustomTheme(name)
+    local path = self.Folder .. "/themes/" .. name .. ".json"
+    if not isfile(path) then return nil end
+    
+    local success, data = pcall(function()
+        return HttpService:JSONDecode(readfile(path))
+    end)
+    
+    if not success then return nil end
+    
+    -- Convert hex strings back to Color3
+    local theme = {}
+    for key, value in pairs(data) do
+        if typeof(value) == "string" then
+            theme[key] = Color3.fromHex(value)
+        end
+    end
+    
+    return theme
+end
+
+function ThemeManager:DeleteTheme(name)
+    local path = self.Folder .. "/themes/" .. name .. ".json"
+    if not isfile(path) then
+        return false, "Theme not found"
+    end
+    
+    local success, err = pcall(delfile, path)
+    return success, err
+end
+
+function ThemeManager:GetCustomThemeList()
+    local themes = {}
+    local files = listfiles(self.Folder .. "/themes")
+    
+    for _, file in pairs(files) do
+        if file:sub(-5) == ".json" then
+            local name = file:match("([^/\\]+)%.json$")
+            if name then
+                table.insert(themes, name)
+            end
+        end
+    end
+    
+    return themes
+end
+
+function ThemeManager:CreateThemeMenu(menu)
+    if not self.Library then return end
+    
+    local themeSection = menu:AddSection({
+        Name = "THEME MANAGER",
+        Position = "right"
+    })
+    
+    -- Built-in themes dropdown
+    local builtInThemes = {}
+    for name, _ in pairs(self.BuiltInThemes) do
+        table.insert(builtInThemes, name)
+    end
+    
+    themeSection:AddDropdown({
+        Name = "Built-in Themes",
+        Values = builtInThemes,
+        Default = "Default",
+        Callback = function(theme)
+            self:ApplyTheme(theme)
+        end
+    })
+    
+    -- Color customization
+    themeSection:AddColorPicker({
+        Name = "Main Color",
+        Default = self.Library.Colors.Main,
+        Callback = function(color)
+            self.Library.Colors.Main = color
+            self:UpdateAllElements()
+        end
+    })
+    
+    themeSection:AddColorPicker({
+        Name = "Background Color",
+        Default = self.Library.Colors.Black,
+        Callback = function(color)
+            self.Library.Colors.Black = color
+            self:UpdateAllElements()
+        end
+    })
+    
+    -- Custom theme management
+    local customThemeName = ""
+    themeSection:AddButton({
+        Name = "Save Current Theme",
+        Callback = function()
+            if customThemeName ~= "" then
+                local success, err = self:SaveCustomTheme(customThemeName, {
+                    Main = self.Library.Colors.Main,
+                    Black = self.Library.Colors.Black
+                })
+                
+                if success then
+                    self.Library.Notifier:Notify({
+                        Title = "Theme Manager",
+                        Content = "Theme saved: " .. customThemeName,
+                        Duration = 3
+                    })
+                else
+                    self.Library.Notifier:Notify({
+                        Title = "Theme Manager",
+                        Content = "Failed to save theme: " .. tostring(err),
+                        Duration = 3
+                    })
+                end
+            end
+        end
+    })
+    
+    -- Custom themes list
+    local customThemes = self:GetCustomThemeList()
+    if #customThemes > 0 then
+        themeSection:AddDropdown({
+            Name = "Custom Themes",
+            Values = customThemes,
+            Callback = function(theme)
+                self:ApplyTheme(theme)
+            end
+        })
+    end
+end
+
+return ThemeManager
